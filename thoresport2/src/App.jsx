@@ -15,9 +15,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/admin-login" element={<><Navbar/><Adminlogin /></>} />
-        <Route path="/admin-dashboard" element={<><Navbar/><AdminDashboard /></>} />
-        <Route path="/admin-tournament" element={<><Navbar/><Admintournament /></>} />
+        <Route path="/admin/auth" element={<><Navbar/><Adminlogin /></>} />
+        <Route path="/admin/dashboard" element={<><Navbar/><AdminDashboard /></>} />
+        <Route path="/admin/tournament" element={<><Navbar/><Admintournament /></>} />
         <Route path="/" element={<><Navbar/><UserDashboard /></>} />  
         <Route path="/profile" element={<><Navbar/><UserProfile /></>} />  
         <Route path="/rankings" element={<><Navbar/><UserRanking /></>} />  
