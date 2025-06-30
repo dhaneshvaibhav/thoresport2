@@ -1,23 +1,31 @@
 import { useState } from 'react';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabase';
 
 function UserSigning() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [msg, setMsg] = useState('');
+  const navigate = useNavigate();
 
   const handleEmailLogin = async () => {
-    const { error } = await SupabaseClient.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) setErrorMsg(error.message);
-    else setErrorMsg('');
+    if (error) {
+      setMsg(`❌ ${error.message}`);
+    } else {
+      setMsg('✅ Login successful!');
+      setTimeout(() => {
+        navigate('/'); // redirect after success
+      }, 1000); // short delay to show success message
+    }
   };
 
   const handleGoogleLogin = async () => {
-    const { error } = await SupabaseClient.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
     });
 
@@ -51,7 +59,7 @@ function UserSigning() {
         Sign In with Google
       </button>
 
-      {errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
+      {msg && <p style={{ color: msg.startsWith('✅') ? 'green' : 'red', marginTop: '1rem' }}>{msg}</p>}
     </div>
   );
 }
