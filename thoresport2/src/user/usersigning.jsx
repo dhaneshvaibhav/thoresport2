@@ -34,7 +34,7 @@ function UserSigning() {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '400px', margin: 'auto' }}>
-      <h2>Admin Login</h2>
+      <h2>User Login</h2>
 
       <input
         type="email"
