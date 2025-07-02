@@ -10,6 +10,8 @@ function AdminTournamentDetails() {
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState(null);
   const [message, setMessage] = useState('');
+  const [showAnnouncementForm, setShowAnnouncementForm] = useState(false);
+  const [announcementText, setAnnouncementText] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -108,6 +110,23 @@ function AdminTournamentDetails() {
     }
   };
 
+  const handleAnnouncementSubmit = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    if (!announcementText.trim()) return;
+    try {
+      const { error } = await supabase
+        .from('announcements')
+        .insert([{ tournament_id: id, content: announcementText.trim() }]);
+      if (error) throw error;
+      setMessage('✅ Announcement posted!');
+      setAnnouncementText('');
+      setShowAnnouncementForm(false);
+    } catch (err) {
+      setMessage('❌ Error posting announcement: ' + (err.message || 'Unknown error'));
+    }
+  };
+
   if (loading) return <div className="text-white">Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
   if (!tournament) return <div className="text-white">Tournament not found</div>;
@@ -189,8 +208,22 @@ function AdminTournamentDetails() {
             <p><b>Mode:</b> {tournament.mode}</p>
             <div style={{ marginTop: 24 }}>
               <button onClick={() => setEditMode(true)} style={{ marginRight: 12, background: '#2196f3', color: 'white', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer' }}>Update</button>
-              <button onClick={handleDelete} style={{ background: '#f44336', color: 'white', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer' }}>Delete</button>
+              <button onClick={handleDelete} style={{ background: '#f44336', color: 'white', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer', marginRight: 12 }}>Delete</button>
+              <button onClick={() => setShowAnnouncementForm((v) => !v)} style={{ background: '#00e6fb', color: '#10131a', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer' }}>Add Announcement</button>
             </div>
+            {showAnnouncementForm && (
+              <form onSubmit={handleAnnouncementSubmit} style={{ marginTop: 16 }}>
+                <textarea
+                  value={announcementText}
+                  onChange={e => setAnnouncementText(e.target.value)}
+                  placeholder="Enter announcement..."
+                  rows={3}
+                  style={{ width: '100%', borderRadius: 6, padding: 8, fontSize: 16 }}
+                  required
+                />
+                <button type="submit" style={{ marginTop: 8, background: '#00e6fb', color: '#10131a', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer', fontWeight: 700 }}>Post Announcement</button>
+              </form>
+            )}
           </>
         )}
       </div>
@@ -198,4 +231,4 @@ function AdminTournamentDetails() {
   );
 }
 
-export default AdminTournamentDetails; 
+export default AdminTournamentDetails;

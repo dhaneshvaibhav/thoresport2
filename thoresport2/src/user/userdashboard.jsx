@@ -6,6 +6,9 @@ function UserDashboard() {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [pendingInvites, setPendingInvites] = useState([]);
+  const [myTeams, setMyTeams] = useState([]);
+  const [teamMembers, setTeamMembers] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,12 +28,107 @@ function UserDashboard() {
         setLoading(false);
       }
     };
+    
+    const fetchInvites = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data, error } = await supabase
+        .from('team_members')
+        .select('id, team_id, status, teams ( team_name )')
+        .eq('user_id', user.id)
+        .eq('status', 'pending');
+      if (!error && data) setPendingInvites(data);
+    };
+
+    const fetchTeams = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data, error } = await supabase
+        .from('team_members')
+        .select('id, team_id, is_captain, status, teams ( team_name, team_logo_url )')
+        .eq('user_id', user.id)
+        .eq('status', 'active');
+      if (!error && data) {
+        setMyTeams(data);
+        // Fetch members for each team
+        for (const tm of data) {
+          // Fetch team members with correct join to profiles
+          const { data: members } = await supabase
+            .from('team_members')
+            .select('id, user_id, is_captain, status, profiles ( email, username )')
+            .eq('team_id', tm.team_id)
+            .eq('status', 'active');
+          setTeamMembers(prev => ({ ...prev, [tm.team_id]: members || [] }));
+        }
+      }
+    };
+
     fetchTournaments();
+    fetchInvites();
+    fetchTeams();
   }, []);
+
+  const handleAccept = async (inviteId) => {
+    await supabase.from('team_members').update({ status: 'active' }).eq('id', inviteId);
+    setPendingInvites(pendingInvites.filter(inv => inv.id !== inviteId));
+  };
+
+  const handleDecline = async (inviteId) => {
+    await supabase.from('team_members').update({ status: 'declined' }).eq('id', inviteId);
+    setPendingInvites(pendingInvites.filter(inv => inv.id !== inviteId));
+  };
 
   return (
     <div>
       <h1>User Dashboard</h1>
+      {myTeams.length > 0 && (
+        <div style={{ marginBottom: 24, padding: 16, background: '#e3f2fd', borderRadius: 8 }}>
+          <h3>My Teams</h3>
+          <ul>
+            {myTeams.map(team => (
+              <li key={team.id} style={{ marginBottom: 16, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  {team.teams?.team_logo_url && (
+                    <img src={team.teams.team_logo_url} alt="logo" style={{ width: 32, height: 32, borderRadius: 4, marginRight: 12 }} />
+                  )}
+                  <b>{team.teams?.team_name || 'Team'}</b>
+                  {team.is_captain && <span style={{ marginLeft: 8, color: '#1976d2', fontWeight: 600 }}>(Captain)</span>}
+                </div>
+                {teamMembers[team.team_id] && (
+                  <ul style={{ marginTop: 6, marginLeft: 40 }}>
+                    {teamMembers[team.team_id].map(member => (
+                      <li key={member.id} style={{ fontSize: 15 }}>
+                        {member.profiles?.username || member.profiles?.email || member.user_id}
+                        {member.is_captain && <span style={{ color: '#1976d2', fontWeight: 600, marginLeft: 4 }}>(Captain)</span>}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {pendingInvites.length > 0 && (
+        <div style={{ marginBottom: 24, padding: 16, background: '#f5f5f5', borderRadius: 8 }}>
+          <h3>Team Invitations</h3>
+          <ul>
+            {pendingInvites.map(invite => (
+              <li key={invite.id} style={{ marginBottom: 8 }}>
+                <b>{invite.teams?.team_name || 'Team'}</b>
+                <button onClick={() => handleAccept(invite.id)} style={{ marginLeft: 12, background: '#4caf50', color: 'white', border: 'none', borderRadius: 4, padding: '4px 12px', cursor: 'pointer' }}>Accept</button>
+                <button onClick={() => handleDecline(invite.id)} style={{ marginLeft: 8, background: '#f44336', color: 'white', border: 'none', borderRadius: 4, padding: '4px 12px', cursor: 'pointer' }}>Decline</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <button
+        onClick={() => navigate('/create-team')}
+        style={{ marginBottom: '1.5rem', padding: '0.5rem 1.5rem', background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, fontWeight: 'bold', cursor: 'pointer' }}
+      >
+        Create Team
+      </button>
       {loading && <p>Loading tournaments...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
@@ -52,4 +150,4 @@ function UserDashboard() {
   );
 }
 
-export default UserDashboard;   
+export default UserDashboard;

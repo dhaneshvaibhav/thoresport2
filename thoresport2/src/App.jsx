@@ -14,6 +14,7 @@ import UserProtectedRoute from './components/UserProtectedRoute';
 import TournamentDetails from './user/TournamentDetails';
 import AdminTournamentDetails from './admin/AdminTournamentDetails';
 import AdminNavbar from './components/adminnavbar';
+import CreateTeam from './user/CreateTeam';
 
 
 function App() {
@@ -27,10 +28,11 @@ function App() {
         <Route path="/profile" element={<UserProtectedRoute><Navbar/><UserProfile /></UserProtectedRoute>} />  
         <Route path="/rankings" element={<UserProtectedRoute><Navbar/><UserRanking /></UserProtectedRoute>} />  
         <Route path="/signin" element={<><Navbar/><UserSigning /></>} />
-        <Route path="/signup" element={<UserProtectedRoute><Navbar/><UserSignup /></UserProtectedRoute>} />
+        <Route path="/signup" element={<><Navbar/><UserSignup /></>} />
         <Route path="/tournament" element={<UserProtectedRoute><Navbar/><UserTournament /></UserProtectedRoute>} />
-        <Route path="/tournament/:id" element={<UserProtectedRoute><TournamentDetails /></UserProtectedRoute>} />
+        <Route path="/tournament/:id" element={<UserProtectedRoute><Navbar/><TournamentDetails /></UserProtectedRoute>} />
         <Route path="/admin/tournament/:id" element={<AdminProtectedRoute><AdminNavbar/><AdminTournamentDetails /></AdminProtectedRoute>} />
+        <Route path="/create-team" element={<UserProtectedRoute><Navbar/><CreateTeam /></UserProtectedRoute>} />
       </Routes>
     </Router>
   );
