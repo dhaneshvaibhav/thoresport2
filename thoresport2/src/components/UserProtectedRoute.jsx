@@ -20,9 +20,6 @@ const UserProtectedRoute = ({ children }) => {
   }, []);
 
   if (loading) return null;
-  if (localStorage.getItem('orgToken')) {
-    return <Navigate to="/admin/dashboard" replace />;
-  }
   if (!session) {
     return <Navigate to="/signin" replace />;
   }
