@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { supabase } from '../supabase';
+import { useNavigate } from 'react-router-dom';
 
 function AdminDashboard() {
   const [showForm, setShowForm] = useState(false);
@@ -20,6 +21,7 @@ function AdminDashboard() {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTournaments = async () => {
@@ -177,7 +179,7 @@ function AdminDashboard() {
             <p><b>End:</b> {t.end_date}</p>
             <p><b>Game:</b> {t.game}</p>
             <p><b>Mode:</b> {t.mode}</p>
-            <button onClick={() => alert(`Join ${t.name}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#4caf50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Join</button>
+                       <button onClick={() => navigate(`/admin/tournament/${t.id}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#2196f3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>View More</button>
           </div>
         ))}
       </div>
