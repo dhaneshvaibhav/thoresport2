@@ -132,72 +132,60 @@ function AdminTournamentDetails() {
   if (!tournament) return <div className="text-white">Tournament not found</div>;
 
   return (
-    <div className="bg-[#0f0f0f] min-h-screen text-white p-6 font-sans">
-      <h1 className="text-3xl font-bold mb-6 text-center text-green-400">{tournament.name}</h1>
-      {message && <div style={{ color: message.startsWith('✅') ? 'green' : 'red', marginBottom: 16 }}>{message}</div>}
-      {tournament.logo_url && <img src={tournament.logo_url} alt={tournament.name} style={{ width: 400, height: 200, objectFit: 'cover', borderRadius: 8, margin: '0 auto 16px', display: 'block' }} />}
-      <div style={{ maxWidth: 600, margin: '0 auto', background: '#fafbfc', color: '#222', borderRadius: 8, padding: 24, boxShadow: '0 2px 8px #0001' }}>
+    <div style={styles.page}>
+      <h1 style={styles.heading}>{tournament.name}</h1>
+      {message && <div style={{ color: message.startsWith('✅') ? '#0f0' : '#f33', marginBottom: 16 }}>{message}</div>}
+
+      {tournament.logo_url && (
+        <img
+          src={tournament.logo_url}
+          alt={tournament.name}
+          style={styles.logo}
+        />
+      )}
+
+      <div style={styles.card} className="details-card">
         {editMode ? (
           <form onSubmit={handleUpdate}>
-            <div>
-              <label>Tournament Name:</label>
-              <input name="name" value={form.name} onChange={handleChange} required style={{ width: '100%' }} />
-            </div>
-            <div>
-              <label>Logo URL:</label>
-              <input name="logo_url" value={form.logo_url} onChange={handleChange} style={{ width: '100%' }} />
-            </div>
-            <div>
-              <label>Prize Pool:</label>
-              <input name="prize_pool" value={form.prize_pool} onChange={handleChange} required style={{ width: '100%' }} />
-            </div>
-            <div>
-              <label>No of Lobbies:</label>
-              <input name="num_lobbies" type="number" min="1" value={form.num_lobbies} onChange={handleChange} required style={{ width: '100%' }} />
-            </div>
-            <div>
-              <label>No of Teams in a Single Lobby:</label>
-              <input name="teams_per_lobby" type="number" min="1" value={form.teams_per_lobby} onChange={handleChange} required style={{ width: '100%' }} />
-            </div>
-            <div>
-              <label>Game:</label>
-              <select name="game" value={form.game} onChange={handleChange} required style={{ width: '100%' }} >
-                <option value="">Select Game</option>
-                <option value="free fire">free fire</option>
-                <option value="bgmi">bgmi</option>
-              </select>
-            </div>
-            <div>
-              <label>Mode:</label>
-              <select name="mode" value={form.mode} onChange={handleChange} required style={{ width: '100%' }}>
-                <option value="">Select Mode</option>
-                <option value="4vs4">4 vs 4</option>
-                <option value="battleroyal">Battle Royale</option>
-              </select>
-            </div>
-            <div>
-              <label>Start Date:</label>
-              <input type="date" name="start_date" value={form.start_date} onChange={handleChange} required style={{ width: '100%' }} />
-            </div>
-            <div>
-              <label>End Date:</label>
-              <input type="date" name="end_date" value={form.end_date} onChange={handleChange} required style={{ width: '100%' }} />
-            </div>
+            {["name", "logo_url", "prize_pool", "num_lobbies", "teams_per_lobby", "game", "mode", "start_date", "end_date"].map(field => (
+              <div key={field}>
+                <label style={styles.label}>{field.replace('_', ' ').toUpperCase()}:</label>
+                {field === 'game' || field === 'mode' ? (
+                  <select name={field} value={form[field]} onChange={handleChange} required style={styles.input}>
+                    <option value="">Select {field}</option>
+                    {field === 'game' ? (
+                      ["free fire", "bgmi"].map(g => <option key={g} value={g}>{g}</option>)
+                    ) : (
+                      ["4vs4", "battleroyal"].map(m => <option key={m} value={m}>{m}</option>)
+                    )}
+                  </select>
+                ) : (
+                  <input
+                    name={field}
+                    value={form[field]}
+                    onChange={handleChange}
+                    required
+                    style={styles.input}
+                    type={field.includes('date') ? 'date' : 'text'}
+                  />
+                )}
+              </div>
+            ))}
             {Array.from({ length: parseInt(form.num_lobbies) || 0 }).map((_, idx) => (
               <div key={idx}>
-                <label>{`Lobby URL ${idx + 1}:`}</label>
+                <label style={styles.label}>{`Lobby URL ${idx + 1}:`}</label>
                 <input
                   name={`lobby_url${idx + 1}`}
                   value={form.lobby_urls[idx] || ''}
                   onChange={handleChange}
                   placeholder={`Enter URL for Lobby ${idx + 1}`}
-                  style={{ width: '100%' }}
+                  style={styles.input}
                   required
                 />
               </div>
             ))}
-            <button type="submit" style={{ marginTop: 12 }}>Save</button>
-            <button type="button" onClick={() => setEditMode(false)} style={{ marginLeft: 12, marginTop: 12 }}>Cancel</button>
+            <button type="submit" style={styles.neonButton} className="neon-btn">✅ Save</button>
+            <button type="button" onClick={() => setEditMode(false)} style={{ ...styles.neonButton, backgroundColor: '#222' }} className="neon-btn">❌ Cancel</button>
           </form>
         ) : (
           <>
@@ -207,8 +195,8 @@ function AdminTournamentDetails() {
             <p><b>Game:</b> {tournament.game}</p>
             <p><b>Mode:</b> {tournament.mode}</p>
             <div style={{ marginTop: 24 }}>
-              <button onClick={() => setEditMode(true)} style={{ marginRight: 12, background: '#2196f3', color: 'white', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer' }}>Update</button>
-              <button onClick={handleDelete} style={{ background: '#f44336', color: 'white', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer', marginRight: 12 }}>Delete</button>
+              <button onClick={() => setEditMode(true)} style={styles.neonButton} className="neon-btn">🛠️ Update</button>
+              <button onClick={handleDelete} style={{ ...styles.neonButton, backgroundColor: '#f33' }} className="neon-btn">🗑️ Delete</button>
               <button onClick={() => setShowAnnouncementForm((v) => !v)} style={{ background: '#00e6fb', color: '#10131a', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer' }}>Add Announcement</button>
             </div>
             {showAnnouncementForm && (
@@ -227,8 +215,91 @@ function AdminTournamentDetails() {
           </>
         )}
       </div>
+
+      {/* Mobile responsive styles */}
+      <style>
+        {`
+          @media (max-width: 600px) {
+            .details-card {
+              width: 90% !important;
+              padding: 1rem !important;
+            }
+
+            .neon-btn {
+              width: 100% !important;
+              margin-top: 0.75rem !important;
+            }
+
+            input, select {
+              font-size: 1rem !important;
+            }
+
+            h1 {
+              font-size: 1.5rem !important;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
+const styles = {
+  page: {
+    background: '#0a0a0a',
+    color: '#00f0ff',
+    minHeight: '100vh',
+    padding: '2rem',
+    fontFamily: 'Orbitron, sans-serif',
+  },
+  heading: {
+    textAlign: 'center',
+    fontSize: '2rem',
+    marginBottom: '1.5rem',
+  },
+  logo: {
+    width: '100%',
+    maxWidth: 400,
+    height: 200,
+    objectFit: 'cover',
+    borderRadius: 8,
+    margin: '0 auto 16px',
+    display: 'block',
+  },
+  card: {
+    maxWidth: 600,
+    margin: '0 auto',
+    background: '#111',
+    color: '#00f0ff',
+    borderRadius: 10,
+    padding: 24,
+    boxShadow: '0 0 12px #00f0ff',
+    width: '100%',
+  },
+  label: {
+    display: 'block',
+    marginBottom: '4px',
+    marginTop: '16px',
+  },
+  input: {
+    width: '100%',
+    padding: '0.6rem',
+    backgroundColor: '#1a1a1a',
+    color: '#00f0ff',
+    border: '1px solid #00f0ff',
+    borderRadius: '6px',
+  },
+  neonButton: {
+    backgroundColor: '#00f0ff',
+    color: '#000',
+    padding: '0.6rem 1.2rem',
+    border: 'none',
+    borderRadius: '6px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    boxShadow: '0 0 10px #00f0ff',
+    marginRight: '0.5rem',
+    marginTop: '1rem',
+  },
+};
 
 export default AdminTournamentDetails;
