@@ -15,24 +15,46 @@ import TournamentDetails from './user/TournamentDetails';
 import AdminTournamentDetails from './admin/AdminTournamentDetails';
 import AdminNavbar from './components/adminnavbar';
 import CreateTeam from './user/CreateTeam';
+import Footer from './components/Footer';
 
+// Layouts
+const UserLayout = ({ children }) => (
+  <>
+    <Navbar />
+    {children}
+    <Footer />
+  </>
+);
+
+const AdminLayout = ({ children }) => (
+  <>
+    <AdminNavbar />
+    {children}
+    <Footer />
+  </>
+);
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/admin/auth" element={<><AdminNavbar/><Adminlogin /></> }/>
-        <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminNavbar/><AdminDashboard /></AdminProtectedRoute>} />
-        <Route path="/admin/tournament" element={<AdminProtectedRoute><AdminNavbar/><Admintournament /></AdminProtectedRoute>} />
-        <Route path="/" element={<UserProtectedRoute><Navbar/><UserDashboard /></UserProtectedRoute>} />  
-        <Route path="/profile" element={<UserProtectedRoute><Navbar/><UserProfile /></UserProtectedRoute>} />  
-        <Route path="/rankings" element={<UserProtectedRoute><Navbar/><UserRanking /></UserProtectedRoute>} />  
-        <Route path="/signin" element={<><Navbar/><UserSigning /></>} />
-        <Route path="/signup" element={<><Navbar/><UserSignup /></>} />
-        <Route path="/tournament" element={<UserProtectedRoute><Navbar/><UserTournament /></UserProtectedRoute>} />
-        <Route path="/tournament/:id" element={<UserProtectedRoute><Navbar/><TournamentDetails /></UserProtectedRoute>} />
-        <Route path="/admin/tournament/:id" element={<AdminProtectedRoute><AdminNavbar/><AdminTournamentDetails /></AdminProtectedRoute>} />
-        <Route path="/create-team" element={<UserProtectedRoute><Navbar/><CreateTeam /></UserProtectedRoute>} />
+        {/* Admin Routes */}
+        <Route path="/admin/auth" element={<AdminLayout><Adminlogin /></AdminLayout>} />
+        <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminLayout><AdminDashboard /></AdminLayout></AdminProtectedRoute>} />
+        <Route path="/admin/tournament" element={<AdminProtectedRoute><AdminLayout><Admintournament /></AdminLayout></AdminProtectedRoute>} />
+        <Route path="/admin/tournament/:id" element={<AdminProtectedRoute><AdminLayout><AdminTournamentDetails /></AdminLayout></AdminProtectedRoute>} />
+
+        {/* Public User Routes */}
+        <Route path="/signin" element={<UserLayout><UserSigning /></UserLayout>} />
+        <Route path="/signup" element={<UserLayout><UserSignup /></UserLayout>} />
+
+        {/* User Protected Routes */}
+        <Route path="/" element={<UserProtectedRoute><UserLayout><UserDashboard /></UserLayout></UserProtectedRoute>} />
+        <Route path="/profile" element={<UserProtectedRoute><UserLayout><UserProfile /></UserLayout></UserProtectedRoute>} />
+        <Route path="/rankings" element={<UserProtectedRoute><UserLayout><UserRanking /></UserLayout></UserProtectedRoute>} />
+        <Route path="/tournament" element={<UserProtectedRoute><UserLayout><UserTournament /></UserLayout></UserProtectedRoute>} />
+        <Route path="/tournament/:id" element={<UserProtectedRoute><UserLayout><TournamentDetails /></UserLayout></UserProtectedRoute>} />
+        <Route path="/create-team" element={<UserProtectedRoute><UserLayout><CreateTeam /></UserLayout></UserProtectedRoute>} />
       </Routes>
     </Router>
   );
