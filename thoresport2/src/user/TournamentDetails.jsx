@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
+import { FaBullhorn, FaBook, FaChartBar, FaUsers, FaLayerGroup } from 'react-icons/fa';
 
 function TournamentDetails() {
   const { id } = useParams();
@@ -9,6 +10,7 @@ function TournamentDetails() {
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('announcements');
   const [announcements, setAnnouncements] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,143 +47,243 @@ function TournamentDetails() {
     fetchAnnouncements();
   }, [id]);
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   if (loading) return <div className="text-white">Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
   if (!tournament) return <div className="text-white">Tournament not found</div>;
 
-  // Blue color from logo
   const blue = '#00e6fb';
-  const darkBlue = '#0a1a2f';
-  const black = '#10131a';
+  const tabs = [
+    { key: 'announcements', label: 'Announcements', icon: <FaBullhorn /> },
+    { key: 'rules', label: 'Rules', icon: <FaBook /> },
+    { key: 'points', label: 'Points', icon: <FaChartBar /> },
+    { key: 'teams', label: 'Teams', icon: <FaUsers /> },
+    { key: 'groups', label: 'Groups', icon: <FaLayerGroup /> }
+  ];
 
   return (
-    <div style={{ background: black, minHeight: '100vh', color: 'white', fontFamily: 'Montserrat, sans-serif', padding: 0 }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 16px' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, alignItems: 'flex-start', justifyContent: 'center' }}>
-          {/* Left: Tournament Image */}
-          <div style={{ flex: '1 1 400px', minWidth: 320, maxWidth: 480, display: 'flex', justifyContent: 'center' }}>
+    <div style={{
+      background: "#000000",
+      minHeight: '100vh',
+      color: 'white',
+      fontFamily: 'Montserrat, sans-serif',
+      padding: '50px',
+      marginTop: '50px',
+    }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 32,
+          alignItems: 'flex-start',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            flex: '1 1 400px',
+            minWidth: 320,
+            maxWidth: 480,
+            display: 'flex',
+            justifyContent: 'center'
+          }}>
             {tournament.logo_url && (
               <img
                 src={tournament.logo_url}
                 alt={tournament.name}
-                style={{ width: '100%', maxWidth: 420, height: 260, objectFit: 'cover', borderRadius: 16, boxShadow: `0 4px 24px ${blue}33` }}
+                style={{
+                  width: '100%',
+                  maxWidth: '100%',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  borderRadius: 16,
+                  boxShadow: `0 4px 24px #0DCAF0`,
+                  backgroundColor: '#0DCAF0',
+                  padding: '8px'
+                }}
               />
             )}
           </div>
-          {/* Right: Tournament Details */}
-          <div style={{ flex: '1 1 400px', minWidth: 320, background: darkBlue, borderRadius: 16, padding: 32, boxShadow: `0 2px 16px ${blue}22` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <span style={{ background: blue, color: black, fontWeight: 700, borderRadius: 6, padding: '2px 12px', fontSize: 16, letterSpacing: 1 }}>{tournament.game}</span>
-            </div>
-            <h1 style={{ fontSize: 32, fontWeight: 900, marginBottom: 12, color: blue, textTransform: 'uppercase', letterSpacing: 1 }}>{tournament.name}</h1>
-            <ol style={{ background: '#181d24', borderRadius: 12, padding: 24, marginBottom: 24, boxShadow: `0 2px 8px ${blue}22`, listStyle: 'decimal inside', color: '#fff', fontSize: 18, fontWeight: 600 }}>
-              <li style={{ marginBottom: 12 }}><span style={{ color: '#b0c4d4', fontWeight: 700 }}>Organized By:</span> <span style={{ color: blue }}>{tournament.organization_id || 'N/A'}</span></li>
-              <li style={{ marginBottom: 12 }}><span style={{ color: '#b0c4d4', fontWeight: 700 }}>Game:</span> <span style={{ color: blue }}>{tournament.game || 'N/A'}</span></li>
-              <li style={{ marginBottom: 12 }}><span style={{ color: '#b0c4d4', fontWeight: 700 }}>Mode:</span> <span style={{ color: blue }}>{tournament.mode || 'N/A'}</span></li>
-              <li style={{ marginBottom: 12 }}><span style={{ color: '#b0c4d4', fontWeight: 700 }}>Prize Pool:</span> <span style={{ color: '#fff', background: blue, borderRadius: 6, padding: '2px 12px', fontWeight: 900, fontSize: 22, marginLeft: 6 }}>{tournament.prize_pool || 'N/A'}</span></li>
-              <li style={{ marginBottom: 12 }}><span style={{ color: '#b0c4d4', fontWeight: 700 }}>Start Date:</span> <span style={{ color: blue }}>{tournament.start_date ? new Date(tournament.start_date).toLocaleDateString() : 'N/A'}</span></li>
-              <li style={{ marginBottom: 12 }}><span style={{ color: '#b0c4d4', fontWeight: 700 }}>End Date:</span> <span style={{ color: blue }}>{tournament.end_date ? new Date(tournament.end_date).toLocaleDateString() : 'N/A'}</span></li>
-              <li style={{ marginBottom: 12 }}><span style={{ color: '#b0c4d4', fontWeight: 700 }}>No. of Lobbies:</span> <span style={{ color: blue }}>{tournament.num_lobbies || 'N/A'}</span></li>
-              <li style={{ marginBottom: 12 }}><span style={{ color: '#b0c4d4', fontWeight: 700 }}>Teams per Lobby:</span> <span style={{ color: blue }}>{tournament.teams_per_lobby || 'N/A'}</span></li>
-              <li style={{ marginBottom: 12 }}><span style={{ color: '#b0c4d4', fontWeight: 700 }}>Created At:</span> <span style={{ color: blue }}>{tournament.created_at ? new Date(tournament.created_at).toLocaleString() : 'N/A'}</span></li>
-            </ol>
-            <button
-              style={{
+
+          <div style={{
+            flex: '1 1 400px',
+            minWidth: 320,
+            background: "#202020",
+            borderRadius: 16,
+            padding: 32,
+            boxShadow: `0 2px 16px #0DCAF022`
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              marginBottom: 8
+            }}>
+              <span style={{
                 background: blue,
-                color: black,
+                color: '#10131a',
                 fontWeight: 700,
-                border: 'none',
                 borderRadius: 6,
-                padding: '12px 32px',
-                fontSize: 18,
-                cursor: 'pointer',
-                marginTop: 8,
-                boxShadow: `0 2px 8px ${blue}55`,
+                padding: '2px 12px',
+                fontSize: 16,
                 letterSpacing: 1
-              }}
-            >
-              LOGIN TO BOOK SLOT
+              }}>{tournament.game}</span>
+            </div>
+            <h1 style={{
+              fontSize: 32,
+              fontWeight: 900,
+              marginBottom: 12,
+              color: blue,
+              textTransform: 'uppercase',
+              letterSpacing: 1
+            }}>{tournament.name}</h1>
+
+            <div style={{
+              background: '#181d24',
+              borderRadius: 12,
+              padding: 24,
+              marginBottom: 24,
+              boxShadow: `0 2px 8px ${blue}22`,
+              color: '#fff',
+              fontSize: 18,
+              fontWeight: 600,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12
+            }}>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Organized By:</span> {tournament.organization_id || 'N/A'}</div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Game:</span> {tournament.game || 'N/A'}</div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Mode:</span> {tournament.mode || 'N/A'}</div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Prize Pool:</span> <span style={{
+                color: '#000000',
+                background: blue,
+                borderRadius: 6,
+                padding: '2px 12px',
+                fontWeight: 900,
+                fontSize: 22,
+                marginLeft: 6
+              }}>{tournament.prize_pool || 'N/A'}</span></div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Start Date:</span> {tournament.start_date ? new Date(tournament.start_date).toLocaleDateString() : 'N/A'}</div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>End Date:</span> {tournament.end_date ? new Date(tournament.end_date).toLocaleDateString() : 'N/A'}</div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>No. of Lobbies:</span> {tournament.num_lobbies || 'N/A'}</div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Teams per Lobby:</span> {tournament.teams_per_lobby || 'N/A'}</div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Created At:</span> {tournament.created_at ? new Date(tournament.created_at).toLocaleString() : 'N/A'}</div>
+            </div>
+
+            <button style={{
+              background: blue,
+              color: '#10131a',
+              fontWeight: 700,
+              border: 'none',
+              borderRadius: 6,
+              padding: '12px 32px',
+              fontSize: 18,
+              cursor: 'pointer',
+              marginTop: 8,
+              boxShadow: `0 2px 8px ${blue}55`,
+              letterSpacing: 1
+            }}>
+              BOOK SLOT
             </button>
           </div>
         </div>
-        {/* Section: Tournament Details Tabs */}
-        <div style={{ marginTop: 48, background: darkBlue, borderRadius: 12, padding: 24, boxShadow: `0 2px 8px ${blue}22` }}>
-          <div style={{ display: 'flex', gap: 32, borderBottom: `2px solid ${blue}22`, marginBottom: 24 }}>
-            { [
-              { key: 'announcements', label: 'Announcements' },
-              { key: 'rules', label: 'Rules' },
-              { key: 'points', label: 'Points' },
-              { key: 'teams', label: 'Teams' },
-              { key: 'groups', label: 'Groups' }
-            ].map(tab => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: activeTab === tab.key ? blue : '#b0c4d4',
-                    fontWeight: activeTab === tab.key ? 800 : 600,
-                    fontSize: 18,
-                    borderBottom: activeTab === tab.key ? `3px solid ${blue}` : '3px solid transparent',
-                    padding: '8px 0',
-                    cursor: 'pointer',
-                    transition: 'color 0.2s, border-bottom 0.2s',
-                    outline: 'none',
-                    letterSpacing: 1
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
+
+        <div style={{
+          marginTop: 48,
+          background: "#202020",
+          borderRadius: 12,
+          padding: 24,
+          boxShadow: `0 2px 8px ${blue}22`,
+          width: '100%',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 16,
+            borderBottom: `2px solid ${blue}22`,
+            marginBottom: 24,
+            justifyContent: 'center'
+          }}>
+            {tabs.map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: activeTab === tab.key ? blue : '#b0c4d4',
+                  fontWeight: activeTab === tab.key ? 800 : 600,
+                  fontSize: 16,
+                  borderBottom: activeTab === tab.key ? `3px solid ${blue}` : '3px solid transparent',
+                  padding: '8px 0',
+                  cursor: 'pointer',
+                  transition: 'color 0.2s, border-bottom 0.2s',
+                  outline: 'none',
+                  letterSpacing: 1,
+                  flex: '1 1 auto',
+                  textAlign: 'center',
+                  minWidth: 100
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  {tab.icon}
+                  {!isMobile && <span>{tab.label}</span>}
+                </div>
+              </button>
+            ))}
           </div>
+
           <div style={{ minHeight: 120 }}>
             {activeTab === 'announcements' && (
-              <div style={{ color: '#fff', fontSize: 18 }}>
-                <b style={{ color: blue }}>Announcements:</b> <br />
+              <div style={{
+                color: '#fff',
+                fontSize: 16,
+                maxHeight: '300px',
+                overflowY: 'auto'
+              }}>
+                <b style={{ color: blue }}>Announcements:</b><br />
                 {announcements.length === 0 ? (
                   <span>No announcements yet.</span>
                 ) : (
-                  <ul style={{ marginTop: 12, paddingLeft: 0, listStyle: 'none' }}>
+                  <ul style={{
+                    marginTop: 12,
+                    paddingLeft: 0,
+                    listStyle: 'none'
+                  }}>
                     {announcements.map(a => (
-                      <li key={a.id} style={{ background: '#181d24', borderRadius: 8, marginBottom: 12, padding: 12, boxShadow: `0 2px 8px ${blue}11` }}>
-                        <div style={{ color: blue, fontWeight: 700, fontSize: 15, marginBottom: 4 }}>
+                      <li key={a.id} style={{
+                        background: '#181d24',
+                        borderRadius: 8,
+                        marginBottom: 12,
+                        padding: 12,
+                        boxShadow: `0 2px 8px ${blue}11`
+                      }}>
+                        <div style={{
+                          color: blue,
+                          fontWeight: 700,
+                          fontSize: 14,
+                          marginBottom: 4
+                        }}>
                           {new Date(a.created_at).toLocaleString()}
                         </div>
-                        <div style={{ color: '#fff', fontSize: 17 }}>{a.content}</div>
+                        <div style={{ fontSize: 15 }}>{a.content}</div>
                       </li>
                     ))}
                   </ul>
                 )}
               </div>
             )}
-            {activeTab === 'rules' && (
-              <div style={{ color: '#fff', fontSize: 18 }}>
-                <b style={{ color: blue }}>Rules:</b> <br />
-                <span>No rules provided yet.</span>
-              </div>
-            )}
-            {activeTab === 'points' && (
-              <div style={{ color: '#fff', fontSize: 18 }}>
-                <b style={{ color: blue }}>Points Table:</b> <br />
-                <span>No points table available yet.</span>
-              </div>
-            )}
-            {activeTab === 'teams' && (
-              <div style={{ color: '#fff', fontSize: 18 }}>
-                <b style={{ color: blue }}>Teams:</b> <br />
-                <span>No teams listed yet.</span>
-              </div>
-            )}
-            {activeTab === 'groups' && (
-              <div style={{ color: '#fff', fontSize: 18 }}>
-                <b style={{ color: blue }}>Groups:</b> <br />
-                <span>No groups assigned yet.</span>
-              </div>
-            )}
+
+            {activeTab === 'rules' && <div style={{ color: '#fff', fontSize: 16 }}><b style={{ color: blue }}>Rules:</b><br />No rules provided yet.</div>}
+            {activeTab === 'points' && <div style={{ color: '#fff', fontSize: 16 }}><b style={{ color: blue }}>Points Table:</b><br />No points available.</div>}
+            {activeTab === 'teams' && <div style={{ color: '#fff', fontSize: 16 }}><b style={{ color: blue }}>Teams:</b><br />No teams listed.</div>}
+            {activeTab === 'groups' && <div style={{ color: '#fff', fontSize: 16 }}><b style={{ color: blue }}>Groups:</b><br />No groups assigned.</div>}
           </div>
         </div>
-        
       </div>
     </div>
   );
