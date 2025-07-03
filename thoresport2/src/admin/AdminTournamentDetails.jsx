@@ -197,7 +197,7 @@ function AdminTournamentDetails() {
             <div style={{ marginTop: 24 }}>
               <button onClick={() => setEditMode(true)} style={styles.neonButton} className="neon-btn">🛠️ Update</button>
               <button onClick={handleDelete} style={{ ...styles.neonButton, backgroundColor: '#f33' }} className="neon-btn">🗑️ Delete</button>
-              <button onClick={() => setShowAnnouncementForm((v) => !v)} style={{ background: '#00e6fb', color: '#10131a', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer' }}>Add Announcement</button>
+              <button onClick={() => setShowAnnouncementForm((v) => !v)} style={styles.neonButton}>Add Announcement</button>
             </div>
             {showAnnouncementForm && (
               <form onSubmit={handleAnnouncementSubmit} style={{ marginTop: 16 }}>
