@@ -47,11 +47,11 @@ const Navbar = () => {
             <i className="bi bi-house-fill nav-icon"></i>
             <span className="nav-label">HOME</span>
           </a>
-          <a href="#tournament" style={linkStyle}>
+          <a href="/tournament" style={linkStyle}>
             <i className="bi bi-trophy-fill nav-icon"></i>
             <span className="nav-label">TOURNAMENT</span>
           </a>
-          <a href="#leaderboard" style={linkStyle}>
+          <a href="/leaderboard" style={linkStyle}>
             <i className="bi bi-bar-chart-line-fill nav-icon"></i>
             <span className="nav-label">LEADERBOARD</span>
           </a>

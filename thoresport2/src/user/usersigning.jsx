@@ -84,6 +84,12 @@ function UserSigning() {
           Sign Up
         </span>
       </p>
+      <p style={footerTextStyle}>
+        Are you A Admin?
+        <span style={linkStyle} onClick={() => navigate('/admin/auth')}>
+        Administrator 
+        </span>
+      </p>
 
       {/* Orbitron Font & Keyframes */}
       <link

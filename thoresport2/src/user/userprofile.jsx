@@ -15,8 +15,8 @@ function UserProfile() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>User Profile</h1>
+    <div style={{ padding: '5rem' }}>
+      <h1 style={{color: "white"}}>User Profile</h1>
       <button onClick={handleSignOut} style={{ marginTop: '1rem' }}>
         Sign Out
       </button>

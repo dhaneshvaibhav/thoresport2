@@ -29,14 +29,6 @@ function Footer() {
         {/* Right Section */}
         <div style={linkSection}>
           <div style={column}>
-            <h4 style={columnTitle}>Quick Links</h4>
-            <a href="/" style={linkStyle}>Home</a>
-            <a href="/tournament" style={linkStyle}>Tournaments</a>
-            <a href="/leaderboard" style={linkStyle}>Leaderboard</a>
-            <a href="/signup" style={linkStyle}>Sign Up</a>
-
-            
-
             {/* Social Icons */}
             <div style={iconRow}>
               <a href="https://discord.com" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
@@ -112,7 +104,7 @@ const devCreditStyle = {
 };
 
 const adjunctLinkStyle = {
-  color: '#0DCAF0',
+  color: 'yellow',
   textDecoration: 'none',
   fontWeight: '600',
 };
