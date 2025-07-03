@@ -43,7 +43,7 @@ const Navbar = () => {
 
         {/* Navigation */}
         <div className="navbar-right">
-          <a href="#home" style={linkStyle}>
+          <a href="/" style={linkStyle}>
             <i className="bi bi-house-fill nav-icon"></i>
             <span className="nav-label">HOME</span>
           </a>
