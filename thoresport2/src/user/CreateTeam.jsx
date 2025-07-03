@@ -1,92 +1,58 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 
-function CreateTeam({ onClose }) {
+function CreateTeam() {
   const [teamName, setTeamName] = useState('');
   const [logo, setLogo] = useState(null);
-  const [logoPreview, setLogoPreview] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [invitedMembers, setInvitedMembers] = useState([]);
-  const [userAlreadyInTeam, setUserAlreadyInTeam] = useState(false);
-  const [checkingTeam, setCheckingTeam] = useState(true);
-  const navigate = useNavigate();
-
-  React.useEffect(() => {
-    const checkUserTeam = async () => {
-      setCheckingTeam(true);
-      setError("");
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setCheckingTeam(false);
-        return;
-      }
-      const { data, error } = await supabase
-        .from('team_members')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .maybeSingle();
-      if (data) setUserAlreadyInTeam(true);
-      else setUserAlreadyInTeam(false);
-      setCheckingTeam(false);
-    };
-    checkUserTeam();
-  }, []);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    setLogo(file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setLogoPreview(reader.result);
-      reader.readAsDataURL(file);
-    } else {
-      setLogoPreview('');
-    }
+    setLogo(e.target.files[0]);
+  };
+
+  // Remove invited member by index
+  const handleRemoveMember = (idx) => {
+    setInvitedMembers(invitedMembers.filter((_, i) => i !== idx));
   };
 
   const handleAddMember = async () => {
-    if (!inviteEmail) return;
-    if (invitedMembers.includes(inviteEmail)) return;
-    // Check if this email is already in a team
-    const { data: memberProfile } = await supabase
+    setError('');
+    const email = inviteEmail.trim().toLowerCase();
+    if (!email) return;
+    if (invitedMembers.includes(email)) return;
+    // Check if user exists in profiles
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('id')
-      .eq('email', inviteEmail)
+      .select('user_id')
+      .eq('email', email)
       .maybeSingle();
-    if (!memberProfile) {
+    if (!profile) {
       setError('User with this email does not exist.');
       return;
     }
+    // Check if user is already in a team
     const { data: memberTeam } = await supabase
       .from('team_members')
       .select('id')
-      .eq('user_id', memberProfile.id)
+      .eq('user_id', profile.user_id)
       .eq('status', 'active')
       .maybeSingle();
     if (memberTeam) {
       setError('This user is already in a team.');
       return;
     }
-    setInvitedMembers([...invitedMembers, inviteEmail]);
+    setInvitedMembers([...invitedMembers, email]);
     setInviteEmail('');
-    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!teamName) {
-      setError('Please fill all required fields.');
-      return;
-    }
-    if (userAlreadyInTeam) {
-      setError('You are already in a team. You cannot create another team.');
-      return;
-    }
+    setSuccess('');
     setLoading(true);
     try {
       // 1. Get current user
@@ -98,7 +64,7 @@ function CreateTeam({ onClose }) {
       if (logo) {
         const fileExt = logo.name.split('.').pop();
         const fileName = `${teamName.replace(/\s+/g, '_')}_${Date.now()}.${fileExt}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage.from('team-logos').upload(fileName, logo);
+        const { error: uploadError } = await supabase.storage.from('team-logos').upload(fileName, logo);
         if (uploadError) throw uploadError;
         const { data: publicUrlData } = supabase.storage.from('team-logos').getPublicUrl(fileName);
         logoUrl = publicUrlData.publicUrl;
@@ -120,79 +86,89 @@ function CreateTeam({ onClose }) {
         status: 'active',
       });
 
-      // 5. Invite members (status: pending)
+      // 5. Add invited members as pending
+      console.log('Invited members at submit:', invitedMembers);
       for (const email of invitedMembers) {
         // Find user by email
-        const { data: memberUser, error: memberError } = await supabase
+        const { data: memberProfile } = await supabase
           .from('profiles')
-          .select('id')
+          .select('user_id')
           .eq('email', email)
-          .single();
-        if (memberUser && memberUser.id) {
-          await supabase.from('team_members').insert({
+          .maybeSingle();
+        if (memberProfile && memberProfile.user_id) {
+          const { error: inviteError } = await supabase.from('team_members').insert({
             team_id: teamData.id,
-            user_id: memberUser.id,
+            user_id: memberProfile.user_id,
             is_captain: false,
             status: 'pending',
           });
+          if (inviteError) {
+            console.error(`Failed to invite ${email}:`, inviteError.message);
+          } else {
+            console.log(`Invite row created for ${email}`);
+          }
+        } else {
+          console.error(`No profile found for invited email: ${email}`);
         }
-        // else: skip or handle user-not-found (optional)
       }
 
-      setLoading(false);
-      if (onClose) onClose();
+      setSuccess('Team created successfully!');
+      setTeamName('');
+      setLogo(null);
+      setInvitedMembers([]);
     } catch (err) {
       setError(err.message || 'Failed to create team');
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Create Team</h2>
-        {onClose && (
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontSize: 22, cursor: 'pointer' }}>&times;</button>
-        )}
-      </div>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Team Name*</label>
-          <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)} />
-        </div>
-        <div>
-          <label>Team Logo</label>
-          <input type="file" accept="image/*" onChange={handleLogoChange} />
-          {logoPreview && <img src={logoPreview} alt="Logo Preview" style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8, marginTop: 8 }} />}
-        </div>
-        <div>
-          <label>Add Team Member (by email):</label>
-          <input
-            type="email"
-            value={inviteEmail}
-            onChange={e => setInviteEmail(e.target.value)}
-            placeholder="Enter email"
-          />
-          <button type="button" onClick={handleAddMember} style={{ marginLeft: 8 }}>
-            Add
-          </button>
-        </div>
-        {invitedMembers.length > 0 && (
-          <div>
-            <label>Invited Members:</label>
-            <ul>
-              {invitedMembers.map((email, idx) => (
-                <li key={idx}>{email}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {error && <div style={{ color: 'red' }}>{error}</div>}
-        <button type="submit" disabled={loading}>
-          {loading ? 'Creating...' : 'Create Team'}
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 300 }}>
+      <label>
+        Team Name*
+        <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)} required />
+      </label>
+      <label>
+        Team Logo
+        <input type="file" accept="image/*" onChange={handleLogoChange} />
+      </label>
+      <label>
+        Add Team Member (by email):
+        <input
+          type="email"
+          value={inviteEmail}
+          onChange={e => setInviteEmail(e.target.value)}
+          placeholder="Enter email"
+        />
+        <button
+          type="button"
+          onClick={handleAddMember}
+          style={{ marginLeft: 8 }}
+          disabled={!inviteEmail.trim() || invitedMembers.includes(inviteEmail.trim().toLowerCase())}
+        >
+          Add
         </button>
-      </form>
-    </div>
+      </label>
+      {invitedMembers.length > 0 && (
+        <div>
+          <label>Invited Members:</label>
+          <ul style={{ paddingLeft: 16 }}>
+            {invitedMembers.map((email, idx) => (
+              <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span>{email}</span>
+                <button type="button" onClick={() => handleRemoveMember(idx)} style={{ color: 'red' }}>
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {error && <div style={{ color: 'red' }}>{error}</div>}
+      {success && <div style={{ color: 'green' }}>{success}</div>}
+      <button type="submit" disabled={loading}>{loading ? 'Creating...' : 'Submit'}</button>
+    </form>
   );
 }
 

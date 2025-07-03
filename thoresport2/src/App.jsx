@@ -14,7 +14,6 @@ import UserProtectedRoute from './components/UserProtectedRoute';
 import TournamentDetails from './user/TournamentDetails';
 import AdminTournamentDetails from './admin/AdminTournamentDetails';
 import AdminNavbar from './components/adminnavbar';
-import CreateTeam from './user/CreateTeam';
 import Footer from './components/Footer';
 
 // Layouts
@@ -30,6 +29,7 @@ const AdminLayout = ({ children }) => (
   <>
     <AdminNavbar />
     {children}
+    <br />
     <Footer />
   </>
 );
@@ -56,7 +56,6 @@ function App() {
         <Route path="/rankings" element={<UserProtectedRoute><UserLayout><UserRanking /></UserLayout></UserProtectedRoute>} />
         <Route path="/tournament" element={<UserProtectedRoute><UserLayout><UserTournament /></UserLayout></UserProtectedRoute>} />
         <Route path="/tournament/:id" element={<UserProtectedRoute><UserLayout><TournamentDetails /></UserLayout></UserProtectedRoute>} />
-        <Route path="/create-team" element={<UserProtectedRoute><UserLayout><CreateTeam /></UserLayout></UserProtectedRoute>} />
 
       </Routes>
     </Router>
