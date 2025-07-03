@@ -1,110 +1,195 @@
-import React from "react";
-import logo from "../assets/logo.png"; // Replace with your actual logo path
+import React, { useEffect, useState } from "react";
+import { supabase } from "../supabase";
+import logo from "../assets/logo.png";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getUser();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleSignIn = () => navigate("/login");
+  const handleProfile = () => navigate("/profile");
+
+  const avatarUrl =
+    user?.user_metadata?.avatar_url || // from Google/GitHub login
+    user?.user_metadata?.profile_image || // if you stored it yourself
+    "https://ui-avatars.com/api/?name=User&background=0DCAF0&color=000"; // fallback avatar
+
   return (
-    <nav
-      className="navbar"
-      style={{
-        backgroundColor: "#0d0d0d",
-        padding: "1rem 2rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "nowrap",
-        width: "100%",
-      }}
-    >
-      {/* Left Section: Logo + Brand */}
-      <div
-  className="d-flex align-items-center"
-  style={{
-    position: "relative",
-    width: "100px", // match image width
-    height: "80px", // match image height
-  }}
->
-  <img
-    src={logo}
-    alt="ThorEsports"
-    style={{
-      width: "100%",
-      height: "100%",
-      objectFit: "contain",
-    }}
-  />
+    <>
+      <nav className="custom-navbar">
+        {/* Left: Logo + Brand */}
+        <div className="navbar-left">
+          <img src={logo} alt="ThorEsports" className="logo" />
+          <span className="brand">ThorEsports</span>
+        </div>
 
-  <span
-    style={{
-      position: "absolute",
-      top: "50%",
-      left: "210%",
-      transform: "translate(-50%, -50%)",
-      color: "#C2F5FF",
-      fontSize: "40px",
-      fontFamily: "Orbitron",
-      whiteSpace: "nowrap",
-      pointerEvents: "left", // optional: make text non-interactive
-    }}
-  >
-    ThorEsports
-  </span>
-</div>
+        {/* Right: Nav Links */}
+        <div className="navbar-right">
+          <a href="#home" style={linkStyle}>
+            <i className="bi bi-house-fill nav-icon"></i>
+            <span className="nav-label">HOME</span>
+          </a>
+          <a href="#tournament" style={linkStyle}>
+            <i className="bi bi-trophy-fill nav-icon"></i>
+            <span className="nav-label">TOURNAMENT</span>
+          </a>
+          <a href="#leaderboard" style={linkStyle}>
+            <i className="bi bi-bar-chart-line-fill nav-icon"></i>
+            <span className="nav-label">LEADERBOARD</span>
+          </a>
 
+          {/* Conditionally show Sign In or Profile Avatar */}
+          {!user ? (
+            <button style={buttonStyle} onClick={handleSignIn}>
+              Sign In
+            </button>
+          ) : (
+            <img
+              src={avatarUrl}
+              alt="Profile"
+              className="avatar"
+              onClick={handleProfile}
+              title="Go to Profile"
+            />
+          )}
+        </div>
+      </nav>
 
+      {/* CSS */}
+      <style>{`
+        .custom-navbar {
+          background-color: #0d0d0d;
+          padding: 0.5rem 1rem;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: space-between;
+          width: 100vw;
+          z-index: 1000;
+          position: fixed;
+          top: 0;
+          left: 0;
+        }
 
-      {/* Right Section: Nav Links + Sign In Button */}
-      <div
-        className="d-flex align-items-center"
-        style={{
-          gap: "2rem",
-          whiteSpace: "nowrap",
-          flexWrap: "nowrap",
-          padding: "0.5rem 0",
-        }}
-      >
-        <a href="#home" style={linkStyle}>
-          HOME
-        </a>
-        <a href="#tournament" style={linkStyle}>
-          TOURNAMENT
-        </a>
-        <a href="#leaderboard" style={linkStyle}>
-          LEADERBOARD
-        </a>
-        <button
-          className="btn fw-bold"
-          style={{
-            backgroundColor: "#0DCAF0",
-            color: "#000",
-            borderRadius: "6px",
-            padding: "25px",
-            paddingRight: "40px",
-            border: "none",
-            fontWeight: "600",
-            textAlign: "center",
-            marginright: "1.5rem",
-            fontFamily: "Jacques Francois",
+        .navbar-left {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
 
-          }}
-        >
-          Sign in
-        </button>
-      </div>
-    </nav>
+        .logo {
+          width: 90px;
+          height: 50px;
+          object-fit: contain;
+          filter: drop-shadow(0 0 8px #0DCAF0);
+        }
+
+        .brand {
+          color: #C2F5FF;
+          font-size: 28px;
+          font-family: 'Orbitron', sans-serif;
+          white-space: nowrap;
+        }
+
+        .navbar-right {
+          display: flex;
+          align-items: center;
+          gap: 1.5rem;
+          flex-wrap: wrap;
+        }
+
+        .avatar {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          border: 2px solid #0DCAF0;
+          cursor: pointer;
+          object-fit: cover;
+          transition: transform 0.2s ease;
+        }
+
+        .avatar:hover {
+          transform: scale(1.1);
+        }
+
+        .nav-icon {
+          display: none;
+        }
+
+        @media (max-width: 768px) {
+          .custom-navbar {
+            flex-direction: column;
+            justify-content: center;
+            bottom: 0;
+            top: auto;
+            border-top: 2px solid #0DCAF0;
+            padding: 0.6rem;
+          }
+
+          .navbar-left {
+            display: none;
+          }
+
+          .navbar-right {
+            justify-content: center;
+            width: 100%;
+            margin: 0.4rem 0;
+            gap: 1rem;
+          }
+
+          .nav-icon {
+            display: inline;
+            font-size: 20px;
+          }
+
+          .nav-label {
+            display: none;
+          }
+        }
+      `}</style>
+    </>
   );
 };
 
-// Nav Link Style
 const linkStyle = {
   color: "#ffffff",
   textDecoration: "none",
   fontWeight: "500",
-  fontSize: "20px",
-  display: "inline-block",
-  transition: "color 0.2s ease",
-  marginright: "1rem",
-  padding: "1rem",
-  fontFamily:"Jacques Francois",
+  fontSize: "16px",
+  padding: "0.5rem 0.75rem",
+  fontFamily: "Jacques Francois",
+  display: "flex",
+  alignItems: "center",
+  gap: "0.4rem",
 };
+
+const buttonStyle = {
+  backgroundColor: "#0DCAF0",
+  color: "#000",
+  borderRadius: "6px",
+  padding: "0.5rem 1rem",
+  border: "none",
+  fontWeight: "600",
+  fontFamily: "Jacques Francois",
+  cursor: "pointer",
+};
+
 export default Navbar;
