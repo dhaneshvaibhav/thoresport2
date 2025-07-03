@@ -79,8 +79,7 @@ function UserDashboard() {
   };
 
   return (
-    <div>
-      <h1>User Dashboard</h1>
+    <div style={{ padding: '5rem', maxWidth: 1200, margin: '0 auto' }}>
       {myTeams.length > 0 && (
         <div style={{ marginBottom: 24, padding: 16, background: '#e3f2fd', borderRadius: 8 }}>
           <h3>My Teams</h3>
