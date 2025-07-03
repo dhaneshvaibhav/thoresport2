@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 
-function CreateTeam() {
+function CreateTeam({ onClose }) {
   const [teamName, setTeamName] = useState('');
   const [logo, setLogo] = useState(null);
   const [logoPreview, setLogoPreview] = useState('');
@@ -140,7 +140,7 @@ function CreateTeam() {
       }
 
       setLoading(false);
-      navigate('/');
+      if (onClose) onClose();
     } catch (err) {
       setError(err.message || 'Failed to create team');
       setLoading(false);
@@ -149,7 +149,12 @@ function CreateTeam() {
 
   return (
     <div>
-      <h2>Create Team</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2>Create Team</h2>
+        {onClose && (
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontSize: 22, cursor: 'pointer' }}>&times;</button>
+        )}
+      </div>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Team Name*</label>

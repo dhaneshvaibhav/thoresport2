@@ -38,6 +38,8 @@ function App() {
   return (
     <Router>
       <Routes>
+
+
         {/* Admin Routes */}
         <Route path="/admin/auth" element={<AdminLayout><Adminlogin /></AdminLayout>} />
         <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminLayout><AdminDashboard /></AdminLayout></AdminProtectedRoute>} />
@@ -55,6 +57,7 @@ function App() {
         <Route path="/tournament" element={<UserProtectedRoute><UserLayout><UserTournament /></UserLayout></UserProtectedRoute>} />
         <Route path="/tournament/:id" element={<UserProtectedRoute><UserLayout><TournamentDetails /></UserLayout></UserProtectedRoute>} />
         <Route path="/create-team" element={<UserProtectedRoute><UserLayout><CreateTeam /></UserLayout></UserProtectedRoute>} />
+
       </Routes>
     </Router>
   );
