@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
+import CreateTeam from './CreateTeam';
 
 function UserDashboard() {
   const [tournaments, setTournaments] = useState([]);
@@ -9,6 +10,7 @@ function UserDashboard() {
   const [pendingInvites, setPendingInvites] = useState([]);
   const [myTeams, setMyTeams] = useState([]);
   const [teamMembers, setTeamMembers] = useState({});
+  const [showCreateTeam, setShowCreateTeam] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -124,11 +126,21 @@ function UserDashboard() {
         </div>
       )}
       <button
-        onClick={() => navigate('/create-team')}
+        onClick={() => setShowCreateTeam(true)}
         style={{ marginBottom: '1.5rem', padding: '0.5rem 1.5rem', background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, fontWeight: 'bold', cursor: 'pointer' }}
       >
         Create Team
       </button>
+      {showCreateTeam && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+        }}>
+          <div style={{ background: 'white', padding: 32, borderRadius: 12, minWidth: 350, maxWidth: 500, boxShadow: '0 4px 24px #0003', position: 'relative' }}>
+            <button onClick={() => setShowCreateTeam(false)} style={{ position: 'absolute', top: 12, right: 12, background: 'transparent', border: 'none', fontSize: 22, cursor: 'pointer' }}>&times;</button>
+            <CreateTeam onClose={() => setShowCreateTeam(false)} />
+          </div>
+        </div>
+      )}
       {loading && <p>Loading tournaments...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>

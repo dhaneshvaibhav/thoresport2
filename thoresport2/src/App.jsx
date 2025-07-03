@@ -32,7 +32,6 @@ function App() {
         <Route path="/tournament" element={<UserProtectedRoute><Navbar/><UserTournament /></UserProtectedRoute>} />
         <Route path="/tournament/:id" element={<UserProtectedRoute><Navbar/><TournamentDetails /></UserProtectedRoute>} />
         <Route path="/admin/tournament/:id" element={<AdminProtectedRoute><AdminNavbar/><AdminTournamentDetails /></AdminProtectedRoute>} />
-        <Route path="/create-team" element={<UserProtectedRoute><Navbar/><CreateTeam /></UserProtectedRoute>} />
       </Routes>
     </Router>
   );
