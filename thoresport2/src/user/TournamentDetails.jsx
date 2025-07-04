@@ -11,6 +11,7 @@ function TournamentDetails() {
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('announcements');
   const [announcements, setAnnouncements] = useState([]);
+  const [registeredTeams, setRegisteredTeams] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const navigate = useNavigate();
@@ -47,6 +48,24 @@ function TournamentDetails() {
       if (!error && data) setAnnouncements(data);
     };
     fetchAnnouncements();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchRegisteredTeams = async () => {
+      if (!id) return;
+      const { data, error } = await supabase
+        .from('tournament_registrations')
+        .select('team_id, teams(*)')
+        .eq('tournament_id', id);
+      if (!error && data) {
+        setRegisteredTeams(
+          data
+            .map(r => r.teams)
+            .filter(team => team) // filter out nulls
+        );
+      }
+    };
+    fetchRegisteredTeams();
   }, [id]);
 
   useEffect(() => {
@@ -287,9 +306,56 @@ function TournamentDetails() {
               </div>
             )}
 
-            {activeTab === 'rules' && <div style={{ color: '#fff', fontSize: 16 }}><b style={{ color: blue }}>Rules:</b><br />No rules provided yet.</div>}
-            {activeTab === 'points' && <div style={{ color: '#fff', fontSize: 16 }}><b style={{ color: blue }}>Points Table:</b><br />No points available.</div>}
-            {activeTab === 'teams' && <div style={{ color: '#fff', fontSize: 16 }}><b style={{ color: blue }}>Teams:</b><br />No teams listed.</div>}
+            {activeTab === 'rules' && (
+              <div style={{ color: '#fff', fontSize: 16 }}>
+                <b style={{ color: blue }}>Rules:</b><br />
+                {tournament.rules && tournament.rules.trim() !== '' ? (
+                  <span style={{ whiteSpace: 'pre-line' }}>{tournament.rules}</span>
+                ) : (
+                  <span>No rules provided yet.</span>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'points' && (
+              <div style={{ color: '#fff', fontSize: 16 }}>
+                <b style={{ color: blue }}>Points System:</b><br />
+                {tournament.points_system && tournament.points_system.trim() !== '' ? (
+                  <span style={{ whiteSpace: 'pre-line' }}>{tournament.points_system}</span>
+                ) : (
+                  <span>No points system provided yet.</span>
+                )}
+              </div>
+            )}
+            {activeTab === 'teams' && (
+              <div style={{ color: '#fff', fontSize: 16 }}>
+                <b style={{ color: blue }}>Teams:</b><br />
+                {registeredTeams.length === 0 ? (
+                  <span>No teams registered yet.</span>
+                ) : (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginTop: 16 }}>
+                    {registeredTeams.map(team => (
+                      <div key={team.id} style={{
+                        background: '#181d24',
+                        borderRadius: 10,
+                        padding: 16,
+                        minWidth: 180,
+                        maxWidth: 220,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        boxShadow: `0 2px 8px ${blue}22`
+                      }}>
+                        {team.logo_url && (
+                          <img src={team.logo_url} alt={team.name} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, marginBottom: 8, background: '#222' }} />
+                        )}
+                        <span style={{ fontWeight: 700, color: blue, fontSize: 18, textAlign: 'center' }}>{team.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             {activeTab === 'groups' && <div style={{ color: '#fff', fontSize: 16 }}><b style={{ color: blue }}>Groups:</b><br />No groups assigned.</div>}
           </div>
         </div>

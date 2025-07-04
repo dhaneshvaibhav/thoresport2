@@ -12,6 +12,10 @@ function AdminTournamentDetails() {
   const [message, setMessage] = useState('');
   const [showAnnouncementForm, setShowAnnouncementForm] = useState(false);
   const [announcementText, setAnnouncementText] = useState('');
+  const [showTeams, setShowTeams] = useState(false);
+  const [teamsLoading, setTeamsLoading] = useState(false);
+  const [registeredTeams, setRegisteredTeams] = useState([]);
+  const [teamsError, setTeamsError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,6 +41,8 @@ function AdminTournamentDetails() {
           start_date: data.start_date || '',
           end_date: data.end_date || '',
           lobby_urls: Array.from(data.lobby_urls || []),
+          rules: data.rules || '',
+          points_system: data.points_system || '',
         });
       } catch (err) {
         setError('Failed to fetch tournament details');
@@ -46,6 +52,47 @@ function AdminTournamentDetails() {
     };
     fetchTournament();
   }, [id]);
+
+  const fetchRegisteredTeams = async () => {
+    setTeamsLoading(true);
+    setTeamsError('');
+    try {
+      // 1. Get all registered teams for this tournament
+      const { data, error } = await supabase
+        .from('tournament_registrations')
+        .select('team_id, teams ( team_name, team_logo_url )')
+        .eq('tournament_id', id);
+      if (error) throw error;
+      const teams = data || [];
+      // 2. Get all members for these teams
+      const teamIds = teams.map(t => t.team_id);
+      let membersByTeam = {};
+      if (teamIds.length > 0) {
+        const { data: members, error: membersError } = await supabase
+          .from('team_members')
+          .select('team_id, user_id, is_captain, profiles ( username, email )')
+          .in('team_id', teamIds)
+          .eq('status', 'active');
+        if (membersError) throw membersError;
+        // Group members by team_id
+        membersByTeam = members.reduce((acc, m) => {
+          if (!acc[m.team_id]) acc[m.team_id] = [];
+          acc[m.team_id].push(m);
+          return acc;
+        }, {});
+      }
+      // 3. Merge members into teams
+      const merged = teams.map(t => ({
+        ...t,
+        members: membersByTeam[t.team_id] || []
+      }));
+      setRegisteredTeams(merged);
+    } catch (err) {
+      setTeamsError('Failed to fetch registered teams');
+    } finally {
+      setTeamsLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,6 +130,8 @@ function AdminTournamentDetails() {
           start_date: form.start_date,
           end_date: form.end_date,
           lobby_urls: form.lobby_urls,
+          rules: form.rules,
+          points_system: form.points_system,
         })
         .eq('id', id);
       if (error) throw error;
@@ -127,6 +176,11 @@ function AdminTournamentDetails() {
     }
   };
 
+  const handleShowTeams = () => {
+    setShowTeams((v) => !v);
+    if (!showTeams) fetchRegisteredTeams();
+  };
+
   if (loading) return <div className="text-white">Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
   if (!tournament) return <div className="text-white">Tournament not found</div>;
@@ -147,10 +201,10 @@ function AdminTournamentDetails() {
       <div style={styles.card} className="details-card">
         {editMode ? (
           <form onSubmit={handleUpdate}>
-            {["name", "logo_url", "prize_pool", "num_lobbies", "teams_per_lobby", "game", "mode", "start_date", "end_date"].map(field => (
+            {['name', 'logo_url', 'prize_pool', 'num_lobbies', 'teams_per_lobby', 'game', 'mode', 'start_date', 'end_date', 'rules', 'points_system'].map(field => (
               <div key={field}>
                 <label style={styles.label}>{field.replace('_', ' ').toUpperCase()}:</label>
-                {field === 'game' || field === 'mode' ? (
+                {(field === 'game' || field === 'mode') ? (
                   <select name={field} value={form[field]} onChange={handleChange} required style={styles.input}>
                     <option value="">Select {field}</option>
                     {field === 'game' ? (
@@ -159,6 +213,8 @@ function AdminTournamentDetails() {
                       ["4vs4", "battleroyal"].map(m => <option key={m} value={m}>{m}</option>)
                     )}
                   </select>
+                ) : (field === 'rules' || field === 'points_system') ? (
+                  <textarea name={field} value={form[field]} onChange={handleChange} style={styles.input} placeholder={`Enter ${field.replace('_', ' ')}`} rows={3} />
                 ) : (
                   <input
                     name={field}
@@ -198,6 +254,7 @@ function AdminTournamentDetails() {
               <button onClick={() => setEditMode(true)} style={styles.neonButton} className="neon-btn">🛠️ Update</button>
               <button onClick={handleDelete} style={{ ...styles.neonButton, backgroundColor: '#f33' }} className="neon-btn">🗑️ Delete</button>
               <button onClick={() => setShowAnnouncementForm((v) => !v)} style={styles.neonButton}>Add Announcement</button>
+              <button onClick={handleShowTeams} style={styles.neonButton}>Teams</button>
             </div>
             {showAnnouncementForm && (
               <form onSubmit={handleAnnouncementSubmit} style={{ marginTop: 16 }}>
@@ -211,6 +268,36 @@ function AdminTournamentDetails() {
                 />
                 <button type="submit" style={{ marginTop: 8, background: '#00e6fb', color: '#10131a', border: 'none', borderRadius: 4, padding: '8px 16px', cursor: 'pointer', fontWeight: 700 }}>Post Announcement</button>
               </form>
+            )}
+            {showTeams && (
+              <div style={{ marginTop: 24, background: '#181d24', borderRadius: 10, padding: 20, color: '#fff' }}>
+                <h3 style={{ color: '#00e6fb', marginBottom: 12 }}>Registered Teams</h3>
+                {teamsLoading ? <p>Loading teams...</p> : teamsError ? <p style={{ color: 'red' }}>{teamsError}</p> : (
+                  registeredTeams.length === 0 ? <p>No teams registered yet.</p> : (
+                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                      {registeredTeams.map((reg) => (
+                        <li key={reg.team_id} style={{ marginBottom: 18, background: '#222', borderRadius: 8, padding: 12 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            {reg.teams?.team_logo_url && <img src={reg.teams.team_logo_url} alt="Logo" style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'cover' }} />}
+                            <span style={{ fontWeight: 700, fontSize: 18 }}>{reg.teams?.team_name || reg.team_id}</span>
+                          </div>
+                          <div style={{ marginTop: 8, marginLeft: 8 }}>
+                            <b>Members:</b>
+                            <ul style={{ margin: 0, paddingLeft: 18 }}>
+                              {reg.members.map((m) => (
+                                <li key={m.user_id}>
+                                  {m.profiles?.username || m.profiles?.email || m.user_id}
+                                  {m.is_captain && <span style={{ color: '#00e6fb', fontWeight: 600, marginLeft: 4 }}>(Captain)</span>}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )
+                )}
+              </div>
             )}
           </>
         )}
