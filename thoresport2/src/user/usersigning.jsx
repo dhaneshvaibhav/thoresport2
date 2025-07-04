@@ -41,7 +41,7 @@ function UserSigning() {
         />
       </div>
 
-      <h2 style={headingStyle}>Login</h2>
+      <h2 style={headingStyle}>Log in</h2>
 
       <input
         type="email"

@@ -55,7 +55,7 @@ function UserSignup() {
 
         <p style={bottomText}>
           Already have an account?{' '}
-          <a href="/login" style={linkStyle}>Login</a>
+          <a href="/signin" style={linkStyle}>Login</a>
         </p>
       </div>
 
