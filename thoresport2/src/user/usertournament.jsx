@@ -29,8 +29,8 @@ function UserTournament() {
   }, []);
 
   return (
-    <div className="bg-[#0f0f0f] min-h-screen text-white p-6 font-sans">
-      <h1 className="text-3xl font-bold mb-6 text-center text-green-400">Available Tournaments</h1>
+    <div className="bg-[#0f0f0f] min-h-screen text-white p-6 font-sans" style={{ padding: '5rem', maxWidth: 1200, margin: '0 auto' }}>
+      <h1 className="text-3xl font-bold mb-6 text-center text-green-400 " style={{color: "white", padding:"10px"}}>Available Tournaments</h1>
 
       {loading && <p className="text-center text-lg">Loading tournaments...</p>}
       {error && <p className="text-center text-red-500">{error}</p>}

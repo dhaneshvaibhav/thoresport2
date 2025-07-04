@@ -41,7 +41,7 @@ function UserSigning() {
         />
       </div>
 
-      <h2 style={headingStyle}>Login</h2>
+      <h2 style={headingStyle}>Log in</h2>
 
       <input
         type="email"
@@ -82,6 +82,12 @@ function UserSigning() {
         Don't have an account?
         <span style={linkStyle} onClick={() => navigate('/signup')}>
           Sign Up
+        </span>
+      </p>
+      <p style={footerTextStyle}>
+        Are you A Admin?
+        <span style={linkStyle} onClick={() => navigate('/admin/auth')}>
+        Administrator 
         </span>
       </p>
 
