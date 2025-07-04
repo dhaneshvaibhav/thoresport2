@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import { FaBullhorn, FaBook, FaChartBar, FaUsers, FaLayerGroup } from 'react-icons/fa';
+import RegisterTeamModal from './RegisterTeamModal';
 
 function TournamentDetails() {
   const { id } = useParams();
@@ -11,6 +12,7 @@ function TournamentDetails() {
   const [activeTab, setActiveTab] = useState('announcements');
   const [announcements, setAnnouncements] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -75,6 +77,11 @@ function TournamentDetails() {
       padding: '50px',
       marginTop: '50px',
     }}>
+      {showRegisterModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#000a', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <RegisterTeamModal tournamentId={tournament.id} onClose={() => setShowRegisterModal(false)} />
+        </div>
+      )}
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{
           display: 'flex',
@@ -185,7 +192,9 @@ function TournamentDetails() {
               marginTop: 8,
               boxShadow: `0 2px 8px ${blue}55`,
               letterSpacing: 1
-            }}>
+            }}
+            onClick={() => setShowRegisterModal(true)}
+            >
               BOOK SLOT
             </button>
           </div>
