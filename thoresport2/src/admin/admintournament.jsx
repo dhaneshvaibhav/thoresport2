@@ -14,6 +14,8 @@ function Admintournament() {
     start_date: '',
     end_date: '',
     lobby_urls: [],
+    rules: '',
+    points_system: '',
   });
   const [logoFile, setLogoFile] = useState(null);
   const [message, setMessage] = useState('');
@@ -74,6 +76,8 @@ function Admintournament() {
         num_lobbies: parseInt(form.num_lobbies),
         teams_per_lobby: parseInt(form.teams_per_lobby),
         lobby_urls: form.lobby_urls,
+        rules: form.rules,
+        points_system: form.points_system,
       };
       const response = await axios.post('http://localhost:4000/create-tournament', payload, {
         headers: {
@@ -173,6 +177,15 @@ function Admintournament() {
               />
             </div>
           ))}
+
+          <div>
+            <label style={styles.label}>Rules:</label>
+            <textarea name="rules" value={form.rules} onChange={handleChange} style={styles.input} placeholder="Enter tournament rules..." rows={3} />
+          </div>
+          <div>
+            <label style={styles.label}>Points System:</label>
+            <textarea name="points_system" value={form.points_system} onChange={handleChange} style={styles.input} placeholder="Enter points system..." rows={3} />
+          </div>
 
           <div style={{ marginTop: '1rem' }}>
             <button type="submit" style={styles.neonButton} className="neonButton">✅ Create</button>
