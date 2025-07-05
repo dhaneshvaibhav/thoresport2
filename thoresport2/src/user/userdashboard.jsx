@@ -3,6 +3,8 @@ import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
 import CreateTeam from './CreateTeam';
 import EditTeamModal from './EditTeamModal';
+import RegisterTeamModal from './RegisterTeamModal';
+
 
 function UserDashboard() {
   const [tournaments, setTournaments] = useState([]);
@@ -15,6 +17,8 @@ function UserDashboard() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTeamId, setEditTeamId] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [registerTournament, setRegisterTournament] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -162,6 +166,13 @@ function UserDashboard() {
           <EditTeamModal teamId={editTeamId} onClose={() => setShowEditModal(false)} />
         </div>
       )}
+      {showRegisterModal && registerTournament && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+        }}>
+          <RegisterTeamModal tournament={registerTournament} onClose={() => setShowRegisterModal(false)} />
+        </div>
+      )}
       {loading && <p>Loading tournaments...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
@@ -174,7 +185,7 @@ function UserDashboard() {
             <p><b>End:</b> {t.end_date}</p>
             <p><b>Game:</b> {t.game}</p>
             <p><b>Mode:</b> {t.mode}</p>
-            <button onClick={() => alert(`Join ${t.name}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#4caf50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginRight: 8 }}>Join</button>
+            <button onClick={() => { setRegisterTournament(t); setShowRegisterModal(true); }} style={{ marginTop: 8, padding: '8px 16px', background: '#4caf50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginRight: 8 }}>Join</button>
             <button onClick={() => navigate(`/tournament/${t.id}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#2196f3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>View More</button>
           </div>
         ))}
