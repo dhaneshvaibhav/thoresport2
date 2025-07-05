@@ -4,18 +4,35 @@ import { supabase } from '../supabase';
 
 function UserProfile() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (data?.user) {
-        setUser(data.user);
+    const fetchProfile = async () => {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        console.error('Auth error:', authError);
+        setLoading(false);
+        return;
       }
+      console.log(user.id);
+      setUserId(user.id);
+
+      const { data, error } = await supabase.rpc('get_user_profile_summary', {
+        input_user_id: user.id,
+      });
+      console.log(data);
+      if (error) {
+        console.error('Error fetching profile summary:', error);
+      } else {
+        setProfileData(data[0]); // data is an array with one row
+      }
+
       setLoading(false);
     };
-    getUser();
+
+    fetchProfile();
   }, []);
 
   const handleSignOut = async () => {
@@ -24,17 +41,23 @@ function UserProfile() {
   };
 
   if (loading) return <div style={{ color: '#fff', textAlign: 'center' }}>Loading profile...</div>;
+  if (!profileData) return <div style={{ color: '#fff', textAlign: 'center' }}>Profile not found.</div>;
 
-  const metadata = user?.user_metadata || {};
-  const username = metadata.username || 'Player123';
-  const seed = user?.id || 'default';
-  const avatarURL = `https://api.dicebear.com/7.x/adventurer/svg?seed=${seed}`;
+  const {
+    email,
+    username = 'Player123',
+    avatar_url,
+    bio,
+    team_name = 'No Team',
+    tournaments_registered = 0,
+    total_tournaments = 0,
+  } = profileData;
 
   return (
     <div style={styles.wrapper}>
       <div style={styles.card}>
         <div style={styles.topBar}>
-          <img src={avatarURL} alt="Avatar" style={styles.avatarStyle} />
+          <img src={avatar_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${userId}`} alt="Avatar" style={styles.avatarStyle} />
           <div>
             <h1 style={styles.username}>{username}</h1>
           </div>
@@ -47,31 +70,31 @@ function UserProfile() {
 
         <div style={styles.infoRow}>
           <label style={styles.label}><i className="bi bi-envelope"></i> Email</label>
-          <p style={styles.text}>{user?.email || 'N/A'}</p>
+          <p style={styles.text}>{email}</p>
         </div>
 
         <div style={styles.divider} />
         <div style={styles.infoRow}>
           <label style={styles.label}><i className="bi bi-people-fill"></i> Team</label>
-          <p style={styles.text}>India</p>
+          <p style={styles.text}>{team_name}</p>
         </div>
 
         <div style={styles.divider} />
         <div style={styles.infoRow}>
-          <label style={styles.label}><i className="bi bi-controller"></i> Games</label>
-          <p style={styles.text}>Free Fire, COD</p>
+          <label style={styles.label}><i className="bi bi-controller"></i> Bio</label>
+          <p style={styles.text}>{bio || 'N/A'}</p>
         </div>
 
         <div style={styles.divider} />
         <div style={styles.infoRow}>
-          <label style={styles.label}><i className="bi bi-trophy-fill"></i> Points</label>
-          <p style={styles.text}>1250</p>
+          <label style={styles.label}><i className="bi bi-trophy-fill"></i> Team Tournaments</label>
+          <p style={styles.text}>{tournaments_registered} Joined</p>
         </div>
 
         <div style={styles.divider} />
         <div style={styles.infoRow}>
-          <label style={styles.label}><i className="bi bi-calendar-check"></i> Tournaments</label>
-          <p style={styles.text}>3 Joined</p>
+          <label style={styles.label}><i className="bi bi-calendar-check"></i> Total Tournaments</label>
+          <p style={styles.text}>{total_tournaments}</p>
         </div>
 
         <div style={styles.divider} />
@@ -128,16 +151,6 @@ const styles = {
     fontWeight: 700,
     color: blue,
     margin: 0,
-  },
-  badge: {
-    background: blue,
-    color: '#000',
-    padding: '4px 12px',
-    borderRadius: '8px',
-    fontWeight: 600,
-    fontSize: '0.75rem',
-    marginTop: '4px',
-    display: 'inline-block',
   },
   editButton: {
     marginLeft: 'auto',
