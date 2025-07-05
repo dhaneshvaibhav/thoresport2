@@ -1,41 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { supabase } from '../supabase';
 
 function CreateTeam() {
-  const [teamName, setTeamName] = useState('');
-  const [logo, setLogo] = useState(null);
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [invitedMembers, setInvitedMembers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+ const [teamName, setTeamName] = useState('');
+ const [logo, setLogo] = useState(null);
+ const [inviteEmail, setInviteEmail] = useState('');
+ const [invitedMembers, setInvitedMembers] = useState([]);
+ const [loading, setLoading] = useState(false);
+ const [error, setError] = useState('');
+ const [success, setSuccess] = useState('');
+ const fileInputRef = useRef(null);
 
-  const handleLogoChange = (e) => setLogo(e.target.files[0]);
+ const handleLogoChange = (e) => setLogo(e.target.files[0]);
 
-  const handleRemoveMember = (idx) => {
-    setInvitedMembers(invitedMembers.filter((_, i) => i !== idx));
-  };
+ const handleRemoveMember = (idx) => {
+ setInvitedMembers(invitedMembers.filter((_, i) => i !== idx));
+ };
 
-  const handleAddMember = async () => {
-    setError('');
-    const email = inviteEmail.trim().toLowerCase();
-    if (!email || invitedMembers.includes(email)) return;
+ const teamFull = invitedMembers.length + 1 >= 5; // 1 for captain
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('user_id')
-      .eq('email', email)
-      .maybeSingle();
+ const handleAddMember = async () => {
+ setError('');
+ if (teamFull) {
+ setError('Team is full. Maximum 5 members allowed.');
+ return;
+ }
+ const email = inviteEmail.trim().toLowerCase();
+ if (!email || invitedMembers.includes(email)) return;
 
-    if (!profile) {
-      setError('User with this email does not exist.');
-      return;
-    }
+ const { data: profile } = await supabase
+     .from('profiles')
+     .select('user_id')
+     .eq('email', email)
+ .maybeSingle();
 
-    const { data: memberTeam } = await supabase
-      .from('team_members')
-      .select('id')
-      .eq('user_id', profile.user_id)
+ if (!profile) {
+ setError('User with this email does not exist.');
+return;
+}
+
+ const { data: memberTeam } = await supabase
+ .from('team_members')
+ .select('id')
+ .eq('user_id', profile.user_id)
       .eq('status', 'active')
       .maybeSingle();
 
@@ -54,18 +61,37 @@ function CreateTeam() {
     setSuccess('');
     setLoading(true);
 
+    if (invitedMembers.length + 1 > 5) {
+      setError('Team is full. Maximum 5 members allowed.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
+
+      // Check for team name uniqueness
+      const { data: existingTeam, error: teamNameError } = await supabase
+        .from('teams')
+        .select('id')
+        .eq('team_name', teamName)
+        .maybeSingle();
+      if (teamNameError) throw new Error('Error checking team name. Please try again.');
+      if (existingTeam) {
+        setError('A team with this name already exists. Please choose another name.');
+        setLoading(false);
+        return;
+      }
 
       let logoUrl = null;
       if (logo) {
         const fileExt = logo.name.split('.').pop();
         const fileName = `${teamName.replace(/\s+/g, '_')}_${Date.now()}.${fileExt}`;
-        const { error: uploadError } = await supabase.storage.from('team-logos').upload(fileName, logo);
-        if (uploadError) throw uploadError;
+        const { data: uploadData, error: uploadError } = await supabase.storage.from('team-logos').upload(fileName, logo);
+        if (uploadError) throw new Error('Failed to upload logo. Please try again.');
         const { data: publicUrlData } = supabase.storage.from('team-logos').getPublicUrl(fileName);
-        logoUrl = publicUrlData.publicUrl;
+        logoUrl = publicUrlData?.publicUrl || null;
       }
 
       const { data: teamData } = await supabase
@@ -81,33 +107,35 @@ function CreateTeam() {
         status: 'active',
       });
 
-      for (const email of invitedMembers) {
-        const { data: memberProfile } = await supabase
-          .from('profiles')
-          .select('user_id')
-          .eq('email', email)
-          .maybeSingle();
+      // Invite members in parallel
+      await Promise.all(invitedMembers.map(async (email) => {
+        const { data: memberProfile } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('email', email)
+          .maybeSingle();
 
-        if (memberProfile?.user_id) {
-          await supabase.from('team_members').insert({
-            team_id: teamData.id,
-            user_id: memberProfile.user_id,
-            is_captain: false,
-            status: 'pending',
-          });
-        }
-      }
+        if (memberProfile?.user_id) {
+          await supabase.from('team_members').insert({
+            team_id: teamData.id,
+            user_id: memberProfile.user_id,
+            is_captain: false,
+            status: 'pending',
+          });
+        }
+      }));
 
-      setSuccess('Team created successfully!');
-      setTeamName('');
-      setLogo(null);
-      setInvitedMembers([]);
-    } catch (err) {
-      setError(err.message || 'Failed to create team');
-    } finally {
-      setLoading(false);
-    }
-  };
+ setSuccess('Team created successfully!');
+ setTeamName('');
+ setLogo(null);
+ setInvitedMembers([]);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+ } catch (err) {
+ setError(err.message || 'Failed to create team');
+ } finally {
+ setLoading(false);
+  }
+ };
 
   return (
     <form onSubmit={handleSubmit} style={styles.form}>
@@ -118,7 +146,7 @@ function CreateTeam() {
       </label>
       <label style={styles.label}>
         Team Logo
-        <input type="file" accept="image/*" onChange={handleLogoChange} style={styles.input} />
+        <input type="file" accept="image/*" onChange={handleLogoChange} style={styles.input} ref={fileInputRef} />
       </label>
       <label style={styles.label}>
         Add Team Member (by email):
@@ -129,12 +157,13 @@ function CreateTeam() {
             onChange={e => setInviteEmail(e.target.value)}
             placeholder="Enter email"
             style={styles.input}
+            disabled={loading || teamFull}
           />
           <button
             type="button"
             onClick={handleAddMember}
             style={styles.button}
-            disabled={!inviteEmail.trim() || invitedMembers.includes(inviteEmail.trim().toLowerCase())}
+            disabled={loading || !inviteEmail.trim() || invitedMembers.includes(inviteEmail.trim().toLowerCase()) || teamFull}
           >
             Add
           </button>
