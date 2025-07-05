@@ -8,16 +8,59 @@ function UserSignup() {
   const [msg, setMsg] = useState('');
 
   const handleSignup = async () => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    // Validate inputs
+    if (!email || !password) {
+      setMsg('❌ Please fill in all fields');
+      return;
+    }
 
-    if (error) {
-      setMsg(`❌ ${error.message}`);
-    } else {
-      setMsg('✅ Signup successful! Check your email to confirm.');
-      console.log('Signup data:', data);
+    if (password.length < 6) {
+      setMsg('❌ Password must be at least 6 characters long');
+      return;
+    }
+
+    setMsg('🔄 Checking if user exists...');
+
+    try {
+      // Check if user already exists by attempting to sign in with a dummy password
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase(),
+        password: 'dummy-password-for-check'
+      });
+      
+      // If we get "Invalid login credentials" error, it means the user exists
+      if (signInError && signInError.message.includes('Invalid login credentials')) {
+        setMsg('❌ User with this email already exists. Please sign in instead.');
+        return;
+      }
+      
+      // If we get "Email not confirmed" error, user exists but email not confirmed
+      if (signInError && signInError.message.includes('Email not confirmed')) {
+        setMsg('❌ User with this email already exists but email is not confirmed. Please check your email or sign in.');
+        return;
+      }
+
+      // If user doesn't exist, proceed with signup
+      setMsg('🔄 Creating account...');
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: email.toLowerCase(),
+        password,
+      });
+
+      if (error) {
+        setMsg(`❌ ${error.message}`);
+      } else {
+        setMsg('✅ Signup successful! Check your email to confirm.');
+        console.log('Signup data:', data);
+        
+        // Clear form after successful signup
+        setEmail('');
+        setPassword('');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      setMsg('❌ An unexpected error occurred. Please try again.');
     }
   };
 

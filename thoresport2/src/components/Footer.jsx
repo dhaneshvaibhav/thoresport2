@@ -31,16 +31,16 @@ function Footer() {
           <div style={column}>
             {/* Social Icons */}
             <div style={iconRow}>
-              <a href="https://discord.com" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
+              <a href="https://discord.gg/Nmv9fNRpHU" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
                 <FaDiscord />
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
+              <a href="https://www.instagram.com/_thor_esports_?igsh=cTVrb2NsbjN2NzN2" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
                 <FaInstagram />
               </a>
               <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
                 <FaWhatsapp />
               </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
+              <a href="https://youtube.com/@gamingwithss001?si=1YlAu0BottfkYXeE" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
                 <FaYoutube />
               </a>
             </div>
