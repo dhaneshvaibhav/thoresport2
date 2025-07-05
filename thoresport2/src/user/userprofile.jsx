@@ -7,6 +7,12 @@ function UserProfile() {
   const [userId, setUserId] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '',
+    bio: '',
+    avatar_url: '',
+  });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -16,17 +22,22 @@ function UserProfile() {
         setLoading(false);
         return;
       }
-      console.log(user.id);
       setUserId(user.id);
 
       const { data, error } = await supabase.rpc('get_user_profile_summary', {
         input_user_id: user.id,
       });
-      console.log(data);
+
       if (error) {
         console.error('Error fetching profile summary:', error);
       } else {
-        setProfileData(data[0]); // data is an array with one row
+        const profile = data[0];
+        setProfileData(profile);
+        setFormData({
+          username: profile.username || '',
+          bio: profile.bio || '',
+          avatar_url: profile.avatar_url || '',
+        });
       }
 
       setLoading(false);
@@ -40,29 +51,66 @@ function UserProfile() {
     if (!error) navigate('/signin');
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdate = async () => {
+    console.log("Updating profile for user_id:", userId);
+  
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        username: formData.username,
+        bio: formData.bio,
+        avatar_url: formData.avatar_url,
+      })
+      .eq('user_id', userId);
+  
+    if (error) {
+      console.error("Error updating profile:", error);
+      alert('Failed to update profile: ' + error.message);
+    } else {
+      alert('Profile updated!');
+      setProfileData(prev => ({ ...prev, ...formData }));
+      setEditMode(false);
+    }
+  };
+  
+
   if (loading) return <div style={{ color: '#fff', textAlign: 'center' }}>Loading profile...</div>;
   if (!profileData) return <div style={{ color: '#fff', textAlign: 'center' }}>Profile not found.</div>;
 
   const {
     email,
-    username = 'Player123',
-    avatar_url,
-    bio,
     team_name = 'No Team',
     tournaments_registered = 0,
     total_tournaments = 0,
   } = profileData;
 
+  const displayAvatar = formData.avatar_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${userId}`;
+
   return (
     <div style={styles.wrapper}>
       <div style={styles.card}>
         <div style={styles.topBar}>
-          <img src={avatar_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${userId}`} alt="Avatar" style={styles.avatarStyle} />
+          <img src={displayAvatar} alt="Avatar" style={styles.avatarStyle} />
           <div>
-            <h1 style={styles.username}>{username}</h1>
+            {editMode ? (
+              <input
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                style={styles.input}
+                placeholder="Enter username"
+              />
+            ) : (
+              <h1 style={styles.username}>{formData.username || 'Player123'}</h1>
+            )}
           </div>
-          <button style={styles.editButton}>
-            <i className="bi bi-pencil-square"></i> Edit Profile
+          <button onClick={() => setEditMode(!editMode)} style={styles.editButton}>
+            <i className="bi bi-pencil-square"></i> {editMode ? 'Cancel' : 'Edit Profile'}
           </button>
         </div>
 
@@ -81,8 +129,34 @@ function UserProfile() {
 
         <div style={styles.divider} />
         <div style={styles.infoRow}>
+          <label style={styles.label}><i className="bi bi-image"></i> Avatar URL</label>
+          {editMode ? (
+            <input
+              name="avatar_url"
+              value={formData.avatar_url}
+              onChange={handleChange}
+              style={styles.input}
+              placeholder="Enter image URL"
+            />
+          ) : (
+            <p style={styles.text}>{formData.avatar_url || 'Default Avatar'}</p>
+          )}
+        </div>
+
+        <div style={styles.divider} />
+        <div style={styles.infoRow}>
           <label style={styles.label}><i className="bi bi-controller"></i> Bio</label>
-          <p style={styles.text}>{bio || 'N/A'}</p>
+          {editMode ? (
+            <input
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              style={styles.input}
+              placeholder="Enter bio"
+            />
+          ) : (
+            <p style={styles.text}>{formData.bio || 'N/A'}</p>
+          )}
         </div>
 
         <div style={styles.divider} />
@@ -100,10 +174,14 @@ function UserProfile() {
         <div style={styles.divider} />
 
         <div style={styles.buttonGroup}>
-          <button style={styles.neonButton}><i className="bi bi-journal-text"></i> History</button>
-          <button style={styles.neonButton}><i className="bi bi-award-fill"></i> Achievements</button>
-          <button style={styles.neonButton}><i className="bi bi-gear-fill"></i> Settings</button>
-          <button onClick={handleSignOut} style={styles.neonButton}><i className="bi bi-box-arrow-right"></i> Logout</button>
+          {editMode ? (
+            <button onClick={handleUpdate} style={styles.neonButton}>
+              <i className="bi bi-check-circle"></i> Update
+            </button>
+          ) : null}
+          <button onClick={handleSignOut} style={styles.neonButton}>
+            <i className="bi bi-box-arrow-right"></i> Logout
+          </button>
         </div>
       </div>
     </div>
@@ -145,6 +223,7 @@ const styles = {
     height: '80px',
     borderRadius: '50%',
     border: `3px solid ${blue}`,
+    objectFit: 'cover',
   },
   username: {
     fontSize: '1.5rem',
@@ -204,6 +283,15 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     gap: '6px',
+  },
+  input: {
+    background: 'transparent',
+    border: `1px solid ${blue}`,
+    padding: '8px',
+    borderRadius: '6px',
+    color: '#fff',
+    fontSize: '1rem',
+    marginBottom: '0.5rem',
   },
 };
 
