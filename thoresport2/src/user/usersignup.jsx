@@ -22,23 +22,8 @@ function UserSignup() {
     setMsg('🔄 Checking if user exists...');
 
     try {
-      // Check if user already exists by attempting to sign in with a dummy password
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: email.toLowerCase(),
-        password: 'dummy-password-for-check'
-      });
-      
-      // If we get "Invalid login credentials" error, it means the user exists
-      if (signInError && signInError.message.includes('Invalid login credentials')) {
-        setMsg('❌ User with this email already exists. Please sign in instead.');
-        return;
-      }
-      
-      // If we get "Email not confirmed" error, user exists but email not confirmed
-      if (signInError && signInError.message.includes('Email not confirmed')) {
-        setMsg('❌ User with this email already exists but email is not confirmed. Please check your email or sign in.');
-        return;
-      }
+      // Let Supabase handle user existence check during signup
+      // Supabase will automatically return an error if user already exists
 
       // If user doesn't exist, proceed with signup
       setMsg('🔄 Creating account...');
