@@ -5,24 +5,42 @@ import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
+  const [profileLetter, setProfileLetter] = useState('U');
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      if (user) {
+        const uname = user.user_metadata?.username;
+        setProfileLetter((uname?.[0] || user.email?.[0] || 'U').toUpperCase());
+      } else {
+        setProfileLetter('U');
+      }
+      setLoading(false);
     };
 
     getUser();
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
+      if (session?.user) {
+        const uname = session.user.user_metadata?.username;
+        setProfileLetter((uname?.[0] || session.user.email?.[0] || 'U').toUpperCase());
+      } else {
+        setProfileLetter('U');
+      }
+      setLoading(false);
     });
 
     return () => {
       listener.subscription.unsubscribe();
     };
   }, []);
+
+  if (loading) return null;
 
   const handleSignIn = () => navigate("/signin");
   const handleSignUp = () => navigate("/signup");
@@ -63,32 +81,40 @@ const Navbar = () => {
                 <i className="bi bi-bar-chart-line-fill nav-icon"></i>
                 <span className="nav-label">LEADERBOARD</span>
               </a>
-              <a href="/rankings" style={linkStyle}>
-                <i className="bi bi-trophy nav-icon"></i>
-                <span className="nav-label">RANKINGS</span>
-              </a>
+             
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <img
-                  src={avatarUrl}
-                  alt="Profile"
-                  className="avatar"
-                  onClick={handleProfile}
-                  title="Go to Profile"
-                />
-                <button 
-                  onClick={handleLogout} 
-                  style={{
-                    ...buttonStyle,
-                    backgroundColor: 'transparent',
-                    border: '1px solid #0DCAF0',
-                    color: '#0DCAF0',
-                    padding: '0.3rem 0.6rem',
-                    fontSize: '0.8rem'
-                  }}
-                  title="Logout"
-                >
-                  <i className="bi bi-box-arrow-right"></i>
-                </button>
+                {user?.user_metadata?.avatar_url || user?.user_metadata?.profile_image ? (
+                  <img
+                    src={avatarUrl}
+                    alt="Profile"
+                    className="avatar"
+                    onClick={handleProfile}
+                    title="Go to Profile"
+                  />
+                ) : (
+                  <div
+                    className="avatar"
+                    onClick={handleProfile}
+                    title="Go to Profile"
+                    style={{
+                      background: '#0DCAF0',
+                      color: '#000',
+                      width: 42,
+                      height: 42,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 'bold',
+                      fontSize: 22,
+                      cursor: 'pointer',
+                      border: '2px solid #0DCAF0',
+                      userSelect: 'none'
+                    }}
+                  >
+                    {profileLetter}
+                  </div>
+                )}
               </div>
             </>
           ) : (
