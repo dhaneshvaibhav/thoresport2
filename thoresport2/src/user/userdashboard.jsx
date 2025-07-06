@@ -3,6 +3,7 @@ import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
 import CreateTeam from './CreateTeam';
 import EditTeamModal from './EditTeamModal';
+import RegisterTeamModal from './RegisterTeamModal';
 
 function UserDashboard() {
   const [tournaments, setTournaments] = useState([]);
@@ -14,6 +15,8 @@ function UserDashboard() {
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTeamId, setEditTeamId] = useState(null);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [registerTournament, setRegisterTournament] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -32,10 +35,9 @@ function UserDashboard() {
   const slideTo = (dir) => {
     setSlideDirection(dir);
     setTimeout(() => {
-      setCurrentVideoIndex((prev) => {
-        if (dir === 'left') return (prev - 1 + videoList.length) % videoList.length;
-        return (prev + 1) % videoList.length;
-      });
+      setCurrentVideoIndex((prev) =>
+        dir === 'left' ? (prev - 1 + videoList.length) % videoList.length : (prev + 1) % videoList.length
+      );
       setIsPlaying(false);
     }, 300);
   };
@@ -43,45 +45,40 @@ function UserDashboard() {
   const handlePlay = () => setIsPlaying(true);
 
   useEffect(() => {
-    const fetchTournaments = async () => {
-      setLoading(true);
-      setError('');
+    const fetchAll = async () => {
       try {
-        let { data, error } = await supabase
-          .from('tournaments')
-          .select('*');
-        if (error) throw error;
-        data = (data || []).sort((a, b) => parseFloat(b.prize_pool) - parseFloat(a.prize_pool));
-        setTournaments(data);
-      } catch (err) {
-        setError('Failed to fetch tournaments');
-      } finally {
-        setLoading(false);
-      }
-    };
+        setLoading(true);
+        setError('');
 
-    const fetchInvites = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data, error } = await supabase
-        .from('team_members')
-        .select('id, team_id, status, teams ( team_name )')
-        .eq('user_id', user.id)
-        .eq('status', 'pending');
-      if (!error && data) setPendingInvites(data);
-    };
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        setCurrentUserId(user.id);
 
-    const fetchTeams = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data, error } = await supabase
-        .from('team_members')
-        .select('id, team_id, is_captain, status, teams ( team_name, team_logo_url )')
-        .eq('user_id', user.id)
-        .eq('status', 'active');
-      if (!error && data) {
-        setMyTeams(data);
-        for (const tm of data) {
+        const [tournRes, inviteRes, teamsRes] = await Promise.all([
+          supabase.from('tournaments').select('*'),
+          supabase
+            .from('team_members')
+            .select('id, team_id, status, teams ( team_name )')
+            .eq('user_id', user.id)
+            .eq('status', 'pending'),
+          supabase
+            .from('team_members')
+            .select('id, team_id, is_captain, status, teams ( team_name, team_logo_url )')
+            .eq('user_id', user.id)
+            .eq('status', 'active'),
+        ]);
+
+        // Tournaments
+        const tournData = tournRes.data || [];
+        setTournaments(tournData.sort((a, b) => parseFloat(b.prize_pool) - parseFloat(a.prize_pool)));
+
+        // Invites
+        setPendingInvites(inviteRes.data || []);
+
+        // My Teams
+        const teamsData = teamsRes.data || [];
+        setMyTeams(teamsData);
+        for (const tm of teamsData) {
           const { data: members } = await supabase
             .from('team_members')
             .select('id, user_id, is_captain, status, profiles ( email, username )')
@@ -89,25 +86,24 @@ function UserDashboard() {
             .eq('status', 'active');
           setTeamMembers(prev => ({ ...prev, [tm.team_id]: members || [] }));
         }
+      } catch (err) {
+        setError('Failed to fetch dashboard data.');
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchTournaments();
-    fetchInvites();
-    fetchTeams();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setCurrentUserId(user?.id || null);
-    });
+    fetchAll();
   }, []);
 
   const handleAccept = async (inviteId) => {
     await supabase.from('team_members').update({ status: 'active' }).eq('id', inviteId);
-    setPendingInvites(pendingInvites.filter(inv => inv.id !== inviteId));
+    setPendingInvites((prev) => prev.filter(inv => inv.id !== inviteId));
   };
 
   const handleDecline = async (inviteId) => {
     await supabase.from('team_members').update({ status: 'declined' }).eq('id', inviteId);
-    setPendingInvites(pendingInvites.filter(inv => inv.id !== inviteId));
+    setPendingInvites((prev) => prev.filter(inv => inv.id !== inviteId));
   };
 
   return (
@@ -150,17 +146,17 @@ function UserDashboard() {
       </div>
 
       <div style={{ padding: '5rem', maxWidth: 1200, margin: '0 auto' }}>
-          {/* Create Team Button moved here */}
-  <button
-    onClick={() => setShowCreateTeam(true)}
-    style={{ marginBottom: '1.5rem', padding: '0.5rem 1.5rem', background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, fontWeight: 'bold', cursor: 'pointer' }}
-  >
-    Create Team
-  </button>
-        {/* Teams and Invitations Section */}
+        <button
+          onClick={() => setShowCreateTeam(true)}
+          style={{ marginBottom: '1.5rem', padding: '0.5rem 1.5rem', background: '#1976d2', color: 'white', border: 'none', borderRadius: 4, fontWeight: 'bold', cursor: 'pointer' }}
+        >
+          Create Team
+        </button>
+
+        {/* My Teams */}
         {myTeams.length > 0 && (
           <div style={{ marginBottom: 24, padding: 16, background: '#1a1a1a', borderRadius: 8 }}>
-            <h3 style={{fontFamily:"orbiton",color: "lightblue"}}>My Teams</h3>
+            <h3 style={{ fontFamily: "Orbitron", color: "lightblue" }}>My Teams</h3>
             <ul>
               {myTeams.map(team => (
                 <li key={team.id} style={{ marginBottom: 16 }}>
@@ -168,7 +164,7 @@ function UserDashboard() {
                     {team.teams?.team_logo_url && (
                       <img src={team.teams.team_logo_url} alt="logo" style={{ width: 32, height: 32, borderRadius: 4, marginRight: 12 }} />
                     )}
-                    <b style={{color : "#01E2E9"}}>{team.teams?.team_name || 'Team'}</b>
+                    <b style={{ color: "#01E2E9" }}>{team.teams?.team_name || 'Team'}</b>
                     {team.is_captain && <span style={{ marginLeft: 8, color: '#1976d2', fontWeight: 600 }}>(Captain)</span>}
                     {team.is_captain && (
                       <button
@@ -195,9 +191,10 @@ function UserDashboard() {
           </div>
         )}
 
+        {/* Team Invitations */}
         {pendingInvites.length > 0 && (
           <div style={{ marginBottom: 24, padding: 16, background: '#1a1a1a', borderRadius: 8 }}>
-            <h3 style={{ width: '100%',marginBottom: '1rem' }}>Team Invitations</h3>
+            <h3>Team Invitations</h3>
             <ul>
               {pendingInvites.map(invite => (
                 <li key={invite.id} style={{ marginBottom: 8 }}>
@@ -210,41 +207,48 @@ function UserDashboard() {
           </div>
         )}
 
-        {showCreateTeam && (
-          <div style={styles.modalOverlay}>
-            <div style={styles.modalContent}>
-              <button onClick={() => setShowCreateTeam(false)} style={styles.closeButton}>&times;</button>
-              <CreateTeam onClose={() => setShowCreateTeam(false)} />
-            </div>
+        {/* Tournaments */}
+        <div>
+          <h3 style={{ marginBottom: '1rem' }}>Upcoming Tournaments</h3>
+          {loading && <p>Loading tournaments...</p>}
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+            {tournaments.map(t => (
+              <div key={t.id} style={{ border: '1px solid #ccc', borderRadius: 8, padding: 16, width: 300, background: '#1a1a1a', boxShadow: '0 2px 8px #0001' }}>
+                {t.logo_url && <img src={t.logo_url} alt={t.name} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 4, marginBottom: 8 }} />}
+                <h2 style={{ color: "#01E2E9", fontFamily: "Orbitron" }}>{t.name}</h2>
+                <p><b style={{ color: "#BABC19" }}>Prize Pool:</b> {t.prize_pool}</p>
+                <p><b style={{ color: "#BABC19" }}>Start:</b> {t.start_date}</p>
+                <p><b style={{ color: "#BABC19" }}>End:</b> {t.end_date}</p>
+                <p><b style={{ color: "#BABC19" }}>Game:</b> {t.game}</p>
+                <p><b style={{ color: "#BABC19" }}>Mode:</b> {t.mode}</p>
+                <button onClick={() => setRegisterTournament(t)} style={{ marginTop: 8, padding: '8px 16px', background: '#4caf50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginRight: 8 }}>Join</button>
+                <button onClick={() => navigate(`/tournament/${t.id}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#2196f3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>View More</button>
+              </div>
+            ))}
           </div>
-        )}
-
-        {showEditModal && editTeamId && (
-          <div style={styles.modalOverlay}>
-            <EditTeamModal teamId={editTeamId} onClose={() => setShowEditModal(false)} />
-          </div>
-        )}
-
-        {loading && <p>Loading tournaments...</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-          <h3 style={{ width: '100%',marginBottom: '1rem' }}>Upcoming Tournaments</h3>
-          {tournaments.map(t => (
-            <div key={t.id} style={{ border: '1px solid #ccc', borderRadius: 8, padding: 16, width: 300, background: '#1a1a1a', boxShadow: '0 2px 8px #0001' }}>
-              {t.logo_url && <img src={t.logo_url} alt={t.name} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 4, marginBottom: 8 }} />}
-              <h2 style={{color: "#01E2E9", fontFamily:"Orbitron"}}>{t.name}</h2>
-              <p><b style={{color : "#BABC19"}}>Prize Pool:</b> {t.prize_pool}</p>
-              <p><b style={{color : "#BABC19"}}>Start:</b> {t.start_date}</p>
-              <p><b style={{color : "#BABC19"}}>End:</b> {t.end_date}</p>
-              <p><b style={{color : "#BABC19"}}>Game:</b> {t.game}</p>
-              <p><b style={{color : "#BABC19"}}>Mode:</b> {t.mode}</p>
-              <button onClick={() => alert(`Join ${t.name}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#4caf50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginRight: 8 }}>Join</button>
-              <button onClick={() => navigate(`/tournament/${t.id}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#2196f3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>View More</button>
-            </div>
-          ))}
         </div>
       </div>
+
+      {/* Modals */}
+      {showCreateTeam && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <button onClick={() => setShowCreateTeam(false)} style={styles.closeButton}>&times;</button>
+            <CreateTeam onClose={() => setShowCreateTeam(false)} />
+          </div>
+        </div>
+      )}
+      {showEditModal && editTeamId && (
+        <div style={styles.modalOverlay}>
+          <EditTeamModal teamId={editTeamId} onClose={() => setShowEditModal(false)} />
+        </div>
+      )}
+      {showRegisterModal && registerTournament && (
+        <div style={styles.modalOverlay}>
+          <RegisterTeamModal tournament={registerTournament} onClose={() => setShowRegisterModal(false)} />
+        </div>
+      )}
     </div>
   );
 }
@@ -315,18 +319,33 @@ const styles = {
     zIndex: 10,
   },
   modalOverlay: {
-    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-    background: 'rgba(0,0,0,0.4)', display: 'flex',
-    alignItems: 'center', justifyContent: 'center', zIndex: 1000
+    position: 'fixed',
+    top: 0, left: 0, width: '100vw', height: '100vh',
+    background: 'rgba(0,0,0,0.4)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000
   },
   modalContent: {
-    padding: 32, borderRadius: 12,
-    minWidth: 350, maxWidth: 500, boxShadow: '0 4px 24px #0003',
-    position: 'relative'
+    padding: 32,
+    borderRadius: 12,
+    minWidth: 350,
+    maxWidth: 500,
+    boxShadow: '0 4px 24px #0003',
+    position: 'relative',
+    backgroundColor: '#121212',
+    color: '#fff'
   },
   closeButton: {
-    position: 'absolute', top: 12, right: 12,
-    background: 'transparent', border: 'none', fontSize: 22, cursor: 'pointer', color: '#fff',
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    background: 'transparent',
+    border: 'none',
+    fontSize: 22,
+    cursor: 'pointer',
+    color: '#fff',
   }
 };
 

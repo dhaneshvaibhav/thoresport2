@@ -8,16 +8,44 @@ function UserSignup() {
   const [msg, setMsg] = useState('');
 
   const handleSignup = async () => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    // Validate inputs
+    if (!email || !password) {
+      setMsg('❌ Please fill in all fields');
+      return;
+    }
 
-    if (error) {
-      setMsg(`❌ ${error.message}`);
-    } else {
-      setMsg('✅ Signup successful! Check your email to confirm.');
-      console.log('Signup data:', data);
+    if (password.length < 6) {
+      setMsg('❌ Password must be at least 6 characters long');
+      return;
+    }
+
+    setMsg('🔄 Checking if user exists...');
+
+    try {
+      // Let Supabase handle user existence check during signup
+      // Supabase will automatically return an error if user already exists
+
+      // If user doesn't exist, proceed with signup
+      setMsg('🔄 Creating account...');
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: email.toLowerCase(),
+        password,
+      });
+
+      if (error) {
+        setMsg(`❌ ${error.message}`);
+      } else {
+        setMsg('✅ Signup successful! Check your email to confirm.');
+        console.log('Signup data:', data);
+        
+        // Clear form after successful signup
+        setEmail('');
+        setPassword('');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      setMsg('❌ An unexpected error occurred. Please try again.');
     }
   };
 

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 
-function RegisterTeamModal({ tournamentId, onClose }) {
+const neon = '#00f6ff';
+
+function RegisterTeamModal({ tournament, onClose }) {
   const [registeredTeams, setRegisteredTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [teamDetails, setTeamDetails] = useState(null);
   const [selectedTeamId, setSelectedTeamId] = useState('');
+  const [teamMembers, setTeamMembers] = useState({});
 
   useEffect(() => {
     const fetchRegisteredTeams = async () => {
@@ -24,6 +27,17 @@ function RegisterTeamModal({ tournamentId, onClose }) {
           .eq('status', 'active');
         if (teamError) throw teamError;
         setRegisteredTeams(teams || []);
+        // Fetch members for each team
+        const membersObj = {};
+        for (const tm of teams || []) {
+          const { data: members } = await supabase
+            .from('team_members')
+            .select('id, user_id, is_captain, profiles ( username, email )')
+            .eq('team_id', tm.team_id)
+            .eq('status', 'active');
+          membersObj[tm.team_id] = members || [];
+        }
+        setTeamMembers(membersObj);
       } catch (err) {
         setError(err.message || 'Failed to fetch teams');
       } finally {
@@ -52,10 +66,10 @@ function RegisterTeamModal({ tournamentId, onClose }) {
   }, [registeredTeams]);
 
   return (
-    <div style={{ background: 'white', padding: 32, borderRadius: 12, minWidth: 350, maxWidth: 500, boxShadow: '0 4px 24px #0003', position: 'relative' }}>
-      <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, background: 'transparent', border: 'none', fontSize: 22, cursor: 'pointer' }}>&times;</button>
-      <h2>Your Teams</h2>
-      {loading ? <p>Loading...</p> : (
+    <div style={styles.modal}>
+      <button onClick={onClose} style={styles.closeBtn}>&times;</button>
+      <h2 style={styles.title}>Register for {tournament?.name || 'Tournament'}</h2>
+      {loading ? <p style={styles.loading}>Loading...</p> : (
         <form onSubmit={async (e) => {
           e.preventDefault();
           setError('');
@@ -76,7 +90,7 @@ function RegisterTeamModal({ tournamentId, onClose }) {
           const { data: alreadyRegistered, error: checkError } = await supabase
             .from('tournament_registrations')
             .select('id')
-            .eq('tournament_id', tournamentId)
+            .eq('tournament_id', tournament?.id)
             .eq('team_id', selectedTeamId)
             .maybeSingle();
           if (checkError) {
@@ -93,7 +107,7 @@ function RegisterTeamModal({ tournamentId, onClose }) {
           const { error: regError } = await supabase
             .from('tournament_registrations')
             .insert({
-              tournament_id: tournamentId,
+              tournament_id: tournament?.id,
               team_id: selectedTeamId,
               status: 'registered'
             });
@@ -103,71 +117,271 @@ function RegisterTeamModal({ tournamentId, onClose }) {
             setSuccess('Team registered successfully!');
           }
           setLoading(false);
-        }} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        }} style={styles.form}>
           {registeredTeams.length === 0 ? (
-            <div style={{ color: '#888' }}>You are not a member of any team.</div>
+            <div style={styles.noTeams}>You are not a member of any team.</div>
           ) : (
-            registeredTeams.map(tm => {
-              const memberCount = teamDetails?.[tm.team_id] || 0;
-              const disabled = memberCount < 4;
-              return (
-                <button
-                  key={tm.team_id}
-                  type="button"
-                  onClick={() => !disabled && setSelectedTeamId(tm.team_id)}
-                  disabled={disabled}
-                  style={{
-                    background: selectedTeamId === tm.team_id ? '#1976d2' : '#f5f5f5',
-                    color: disabled ? '#aaa' : (selectedTeamId === tm.team_id ? 'white' : '#222'),
-                    border: selectedTeamId === tm.team_id ? '2px solid #1976d2' : '1px solid #ccc',
-                    borderRadius: 8,
-                    padding: 12,
-                    marginBottom: 8,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    cursor: disabled ? 'not-allowed' : 'pointer',
-                    fontWeight: 600,
-                    fontSize: 16,
-                    outline: selectedTeamId === tm.team_id ? '2px solid #1976d2' : 'none',
-                    boxShadow: selectedTeamId === tm.team_id ? '0 2px 8px #1976d233' : 'none',
-                    opacity: disabled ? 0.5 : 1,
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {tm.teams?.team_logo_url && <img src={tm.teams.team_logo_url} alt="Logo" style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />}
-                  <span>{tm.teams?.team_name || tm.team_id}</span>
-                  <span style={{ marginLeft: 8, fontSize: 14, color: '#555' }}>({memberCount} members)</span>
-                  {tm.is_captain && <span style={{ color: selectedTeamId === tm.team_id ? '#fff' : '#1976d2', fontWeight: 600, marginLeft: 8 }}>(Captain)</span>}
-                  {disabled && <span style={{ color: 'red', marginLeft: 8, fontSize: 13 }}>(Min 4 required)</span>}
-                </button>
-              );
-            })
+            <div style={styles.teamsGrid}>
+              {registeredTeams.map(tm => {
+                const memberCount = teamDetails?.[tm.team_id] || 0;
+                const disabled = memberCount < 4;
+                const selected = selectedTeamId === tm.team_id;
+                const members = teamMembers[tm.team_id] || [];
+                return (
+                  <div
+                    key={tm.team_id}
+                    style={{
+                      ...styles.teamCard,
+                      ...(selected ? styles.teamCardSelected : {}),
+                      ...(disabled ? styles.teamCardDisabled : {}),
+                    }}
+                    onClick={() => !disabled && setSelectedTeamId(tm.team_id)}
+                  >
+                    <div style={styles.teamHeader}>
+                      {tm.teams?.team_logo_url && <img src={tm.teams.team_logo_url} alt="Logo" style={styles.logoImgLarge} />}
+                      <div>
+                        <div style={styles.teamName}>{tm.teams?.team_name || tm.team_id}</div>
+                        <div style={styles.memberCount}>{memberCount} member{memberCount !== 1 ? 's' : ''}</div>
+                        {tm.is_captain && <span style={styles.captainBadge}>Captain</span>}
+                        {disabled && <span style={styles.minRequired}>Min 4 required</span>}
+                      </div>
+                    </div>
+                    <div style={styles.membersList}>
+                      {members.map(m => (
+                        <div key={m.id} style={styles.memberRow}>
+                          <span style={styles.avatar}>{(m.profiles?.username || m.profiles?.email || '?')[0]?.toUpperCase()}</span>
+                          <span style={styles.memberName}>{m.profiles?.username || m.profiles?.email || m.user_id}</span>
+                          {m.is_captain && <span style={styles.captainSmall}>(C)</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
           <button
             type="submit"
             disabled={loading || !selectedTeamId}
             style={{
-              background: '#1976d2',
-              color: 'white',
-              padding: '10px 0',
-              borderRadius: 8,
-              border: 'none',
-              fontWeight: 700,
-              fontSize: 18,
-              marginTop: 8,
-              cursor: loading || !selectedTeamId ? 'not-allowed' : 'pointer',
-              opacity: loading || !selectedTeamId ? 0.7 : 1
+              ...styles.confirmBtn,
+              ...(loading || !selectedTeamId ? styles.confirmBtnDisabled : {}),
             }}
           >
             Confirm Slot
           </button>
-          {error && <div style={{ color: 'red' }}>{error}</div>}
-          {success && <div style={{ color: 'green' }}>{success}</div>}
+          {error && <div style={styles.error}>{error}</div>}
+          {success && <div style={styles.success}>{success}</div>}
         </form>
       )}
     </div>
   );
 }
+
+const styles = {
+  modal: {
+    background: '#000',
+    color: neon,
+    fontFamily: 'Orbitron, sans-serif',
+    padding: 24,
+    borderRadius: 16,
+    minWidth: 280,
+    maxWidth: 350,
+    width: '95vw',
+    boxSizing: 'border-box',
+    boxShadow: `0 4px 24px ${neon}99`,
+    position: 'relative',
+    margin: '40px auto',
+    border: `2px solid ${neon}`,
+    maxHeight: '90vh',
+    overflowY: 'auto',
+  },
+  closeBtn: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    background: 'transparent',
+    border: 'none',
+    fontSize: 22,
+    color: neon,
+    cursor: 'pointer',
+    transition: 'color 0.2s',
+  },
+  title: {
+    textAlign: 'center',
+    fontSize: 20,
+    marginBottom: 18,
+    color: neon,
+    fontWeight: 700,
+    letterSpacing: 1,
+  },
+  loading: {
+    color: neon,
+    textAlign: 'center',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 10,
+  },
+  noTeams: {
+    color: '#888',
+    textAlign: 'center',
+    fontSize: 14,
+    margin: '16px 0',
+  },
+  teamsGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 12,
+    marginBottom: 10,
+  },
+  teamCard: {
+    background: '#111',
+    border: `1.5px solid ${neon}`,
+    borderRadius: 10,
+    padding: 12,
+    cursor: 'pointer',
+    transition: 'box-shadow 0.2s, border 0.2s',
+    boxShadow: '0 2px 8px #00f6ff22',
+    marginBottom: 2,
+    opacity: 1,
+  },
+  teamCardSelected: {
+    border: `2.5px solid ${neon}`,
+    boxShadow: `0 0 16px ${neon}99`,
+    background: '#01131a',
+  },
+  teamCardDisabled: {
+    border: '1.5px solid #ff0033',
+    opacity: 0.6,
+    cursor: 'not-allowed',
+    background: '#1a0000',
+  },
+  teamHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 6,
+  },
+  logoImgLarge: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    objectFit: 'cover',
+    background: '#222',
+    border: `1.5px solid ${neon}`,
+    boxShadow: `0 0 8px ${neon}44`,
+  },
+  teamName: {
+    fontWeight: 700,
+    fontSize: 15,
+    color: neon,
+    marginBottom: 2,
+  },
+  memberCount: {
+    fontSize: 12,
+    color: neon,
+    fontWeight: 500,
+    marginBottom: 2,
+  },
+  captainBadge: {
+    background: neon,
+    color: '#000',
+    fontWeight: 700,
+    fontSize: 11,
+    borderRadius: 4,
+    padding: '2px 6px',
+    marginLeft: 6,
+    marginRight: 2,
+    letterSpacing: 0.5,
+  },
+  minRequired: {
+    background: '#ff0033',
+    color: '#fff',
+    fontWeight: 600,
+    fontSize: 11,
+    borderRadius: 4,
+    padding: '2px 6px',
+    marginLeft: 6,
+    letterSpacing: 0.5,
+  },
+  membersList: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 4,
+    marginLeft: 4,
+  },
+  memberRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+    background: '#222',
+    borderRadius: 6,
+    padding: '2px 8px',
+    fontSize: 12,
+    color: neon,
+    fontWeight: 500,
+  },
+  avatar: {
+    width: 18,
+    height: 18,
+    borderRadius: '50%',
+    background: neon,
+    color: '#000',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: 700,
+    fontSize: 12,
+    marginRight: 2,
+  },
+  memberName: {
+    fontWeight: 500,
+    fontSize: 12,
+    color: neon,
+  },
+  captainSmall: {
+    color: '#1976d2',
+    fontWeight: 700,
+    fontSize: 11,
+    marginLeft: 2,
+  },
+  confirmBtn: {
+    marginTop: 10,
+    padding: '10px',
+    backgroundColor: neon,
+    color: '#000',
+    fontWeight: 'bold',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: 15,
+    transition: 'background 0.2s',
+    width: '100%',
+    letterSpacing: 1,
+  },
+  confirmBtnDisabled: {
+    backgroundColor: '#222',
+    color: '#888',
+    cursor: 'not-allowed',
+    opacity: 0.7,
+  },
+  error: {
+    color: 'red',
+    marginTop: 4,
+    textAlign: 'center',
+    fontWeight: 600,
+    fontSize: 13,
+  },
+  success: {
+    color: 'limegreen',
+    marginTop: 4,
+    textAlign: 'center',
+    fontWeight: 600,
+    fontSize: 13,
+  },
+};
 
 export default RegisterTeamModal;

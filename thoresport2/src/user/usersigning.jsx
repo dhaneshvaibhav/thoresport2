@@ -7,6 +7,9 @@ function UserSigning() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [msg, setMsg] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetMsg, setResetMsg] = useState('');
   const navigate = useNavigate();
 
   const handleEmailLogin = async () => {
@@ -25,6 +28,30 @@ function UserSigning() {
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
     if (error) console.error(error.message);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!resetEmail) {
+      setResetMsg('❌ Please enter your email address');
+      return;
+    }
+
+    setResetMsg('🔄 Sending reset link...');
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    if (error) {
+      setResetMsg(`❌ ${error.message}`);
+    } else {
+      setResetMsg('✅ Password reset link sent! Check your email.');
+      setResetEmail('');
+      setTimeout(() => {
+        setShowForgotPassword(false);
+        setResetMsg('');
+      }, 3000);
+    }
   };
 
   return (
@@ -58,13 +85,27 @@ function UserSigning() {
         style={inputStyle}
       />
 
-      <button onClick={handleEmailLogin} style={buttonStyle}>
+      <div style={{ textAlign: 'right', marginBottom: '1rem' }}>
+        <span 
+          style={{ 
+            color: '#0DCAF0', 
+            cursor: 'pointer', 
+            fontSize: '0.9rem',
+            textDecoration: 'underline'
+          }}
+          onClick={() => setShowForgotPassword(true)}
+        >
+          Forgot Password?
+        </span>
+      </div>
+
+            <button onClick={handleEmailLogin} style={buttonStyle}>
         Sign In with Email
       </button>
 
-      <button onClick={handleGoogleLogin} style={buttonStyle}>
+      {/* <button onClick={handleGoogleLogin} style={buttonStyle}>
         Sign In with Google
-      </button>
+      </button> */}
 
       {msg && (
         <p
@@ -76,6 +117,84 @@ function UserSigning() {
         >
           {msg}
         </p>
+      )}
+
+      {/* Forgot Password Modal */}
+      {showForgotPassword && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            backgroundColor: '#000000',
+            border: '2px solid #0DCAF0',
+            borderRadius: '12px',
+            padding: '2rem',
+            maxWidth: '400px',
+            width: '90%',
+            boxShadow: '0 0 25px #0DCAF080',
+          }}>
+            <h3 style={{ color: '#0DCAF0', textAlign: 'center', marginBottom: '1.5rem' }}>
+              Reset Password
+            </h3>
+            
+            <input
+              type="email"
+              placeholder="Enter your email address"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              style={inputStyle}
+            />
+            
+            {resetMsg && (
+              <p style={{
+                color: resetMsg.startsWith('✅') ? '#0DCAF0' : 'red',
+                textAlign: 'center',
+                marginBottom: '1rem',
+                fontSize: '0.9rem',
+              }}>
+                {resetMsg}
+              </p>
+            )}
+            
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button 
+                onClick={handleForgotPassword}
+                style={{
+                  ...buttonStyle,
+                  flex: 1,
+                  backgroundColor: '#0DCAF0',
+                }}
+              >
+                Send Reset Link
+              </button>
+              <button 
+                onClick={() => {
+                  setShowForgotPassword(false);
+                  setResetEmail('');
+                  setResetMsg('');
+                }}
+                style={{
+                  ...buttonStyle,
+                  flex: 1,
+                  backgroundColor: 'transparent',
+                  border: '1px solid #0DCAF0',
+                  color: '#0DCAF0',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <p style={footerTextStyle}>

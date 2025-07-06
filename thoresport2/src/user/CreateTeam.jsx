@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { supabase } from '../supabase';
 
 function CreateTeam() {
@@ -9,6 +9,9 @@ function CreateTeam() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const fileInputRef = useRef(null);
+
+  const teamFull = invitedMembers.length + 1 >= 5; // 1 for captain
 
   const handleLogoChange = (e) => setLogo(e.target.files[0]);
 
@@ -19,6 +22,12 @@ function CreateTeam() {
   const handleAddMember = async () => {
     setError('');
     const email = inviteEmail.trim().toLowerCase();
+
+    if (teamFull) {
+      setError('Team is full. Maximum 5 members allowed.');
+      return;
+    }
+
     if (!email || invitedMembers.includes(email)) return;
 
     const { data: profile } = await supabase
@@ -54,18 +63,38 @@ function CreateTeam() {
     setSuccess('');
     setLoading(true);
 
+    if (invitedMembers.length + 1 > 5) {
+      setError('Team is full. Maximum 5 members allowed.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
+
+      // Check for team name uniqueness
+      const { data: existingTeam, error: teamNameError } = await supabase
+        .from('teams')
+        .select('id')
+        .eq('team_name', teamName)
+        .maybeSingle();
+
+      if (teamNameError) throw new Error('Error checking team name. Please try again.');
+      if (existingTeam) {
+        setError('A team with this name already exists. Please choose another name.');
+        setLoading(false);
+        return;
+      }
 
       let logoUrl = null;
       if (logo) {
         const fileExt = logo.name.split('.').pop();
         const fileName = `${teamName.replace(/\s+/g, '_')}_${Date.now()}.${fileExt}`;
         const { error: uploadError } = await supabase.storage.from('team-logos').upload(fileName, logo);
-        if (uploadError) throw uploadError;
+        if (uploadError) throw new Error('Failed to upload logo. Please try again.');
         const { data: publicUrlData } = supabase.storage.from('team-logos').getPublicUrl(fileName);
-        logoUrl = publicUrlData.publicUrl;
+        logoUrl = publicUrlData?.publicUrl || null;
       }
 
       const { data: teamData } = await supabase
@@ -81,7 +110,8 @@ function CreateTeam() {
         status: 'active',
       });
 
-      for (const email of invitedMembers) {
+      // Invite members in parallel
+      await Promise.all(invitedMembers.map(async (email) => {
         const { data: memberProfile } = await supabase
           .from('profiles')
           .select('user_id')
@@ -96,12 +126,13 @@ function CreateTeam() {
             status: 'pending',
           });
         }
-      }
+      }));
 
       setSuccess('Team created successfully!');
       setTeamName('');
       setLogo(null);
       setInvitedMembers([]);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (err) {
       setError(err.message || 'Failed to create team');
     } finally {
@@ -130,6 +161,7 @@ function CreateTeam() {
           type="file"
           accept="image/*"
           onChange={handleLogoChange}
+          ref={fileInputRef}
           style={styles.input}
         />
       </label>
@@ -143,12 +175,17 @@ function CreateTeam() {
             onChange={(e) => setInviteEmail(e.target.value)}
             placeholder="Enter email"
             style={styles.input}
+            disabled={loading || teamFull}
           />
           <button
             type="button"
             onClick={handleAddMember}
             style={styles.button}
-            disabled={!inviteEmail.trim() || invitedMembers.includes(inviteEmail.trim().toLowerCase())}
+            disabled={
+              loading || !inviteEmail.trim() ||
+              invitedMembers.includes(inviteEmail.trim().toLowerCase()) ||
+              teamFull
+            }
           >
             Add
           </button>
@@ -162,7 +199,11 @@ function CreateTeam() {
             {invitedMembers.map((email, idx) => (
               <li key={idx} style={styles.listItem}>
                 <span>{email}</span>
-                <button type="button" onClick={() => handleRemoveMember(idx)} style={styles.removeBtn}>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveMember(idx)}
+                  style={styles.removeBtn}
+                >
                   Remove
                 </button>
               </li>
@@ -207,7 +248,6 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     fontSize: '14px',
-    fontFamily: 'Orbitron, sans-serif',
   },
   input: {
     padding: '8px',

@@ -346,10 +346,10 @@ function TournamentDetails() {
                         alignItems: 'center',
                         boxShadow: `0 2px 8px ${blue}22`
                       }}>
-                        {team.logo_url && (
-                          <img src={team.logo_url} alt={team.name} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, marginBottom: 8, background: '#222' }} />
+                        {team.team_logo_url && (
+                          <img src={team.team_logo_url} alt={team.team_name} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, marginBottom: 8, background: '#222' }} />
                         )}
-                        <span style={{ fontWeight: 700, color: blue, fontSize: 18, textAlign: 'center' }}>{team.name}</span>
+                        <span style={{ fontWeight: 700, color: blue, fontSize: 18, textAlign: 'center' }}>{team.team_name}</span>
                       </div>
                     ))}
                   </div>

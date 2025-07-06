@@ -24,8 +24,13 @@ const Navbar = () => {
     };
   }, []);
 
-  const handleSignIn = () => navigate("/login");
+  const handleSignIn = () => navigate("/signin");
+  const handleSignUp = () => navigate("/signup");
   const handleProfile = () => navigate("/profile");
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/signin");
+  };
 
   const avatarUrl =
     user?.user_metadata?.avatar_url ||
@@ -43,31 +48,71 @@ const Navbar = () => {
 
         {/* Navigation */}
         <div className="navbar-right">
-          <a href="/" style={linkStyle}>
-            <i className="bi bi-house-fill nav-icon"></i>
-            <span className="nav-label">HOME</span>
-          </a>
-          <a href="/tournament" style={linkStyle}>
-            <i className="bi bi-trophy-fill nav-icon"></i>
-            <span className="nav-label">TOURNAMENT</span>
-          </a>
-          <a href="/leaderboard" style={linkStyle}>
-            <i className="bi bi-bar-chart-line-fill nav-icon"></i>
-            <span className="nav-label">LEADERBOARD</span>
-          </a>
-
-          {!user ? (
-            <button style={buttonStyle} onClick={handleSignIn}>
-              Sign In
-            </button>
+          {user ? (
+            // After Login Navigation
+            <>
+              <a href="/" style={linkStyle}>
+                <i className="bi bi-house-fill nav-icon"></i>
+                <span className="nav-label">HOME</span>
+              </a>
+              <a href="/tournament" style={linkStyle}>
+                <i className="bi bi-trophy-fill nav-icon"></i>
+                <span className="nav-label">TOURNAMENT</span>
+              </a>
+              <a href="/leaderboard" style={linkStyle}>
+                <i className="bi bi-bar-chart-line-fill nav-icon"></i>
+                <span className="nav-label">LEADERBOARD</span>
+              </a>
+              <a href="/rankings" style={linkStyle}>
+                <i className="bi bi-trophy nav-icon"></i>
+                <span className="nav-label">RANKINGS</span>
+              </a>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <img
+                  src={avatarUrl}
+                  alt="Profile"
+                  className="avatar"
+                  onClick={handleProfile}
+                  title="Go to Profile"
+                />
+                <button 
+                  onClick={handleLogout} 
+                  style={{
+                    ...buttonStyle,
+                    backgroundColor: 'transparent',
+                    border: '1px solid #0DCAF0',
+                    color: '#0DCAF0',
+                    padding: '0.3rem 0.6rem',
+                    fontSize: '0.8rem'
+                  }}
+                  title="Logout"
+                >
+                  <i className="bi bi-box-arrow-right"></i>
+                </button>
+              </div>
+            </>
           ) : (
-            <img
-              src={avatarUrl}
-              alt="Profile"
-              className="avatar"
-              onClick={handleProfile}
-              title="Go to Profile"
-            />
+            // Before Login Navigation
+            <>
+              <a href="/" style={linkStyle}>
+                <i className="bi bi-house-fill nav-icon"></i>
+                <span className="nav-label">HOME</span>
+              </a>
+              <button style={buttonStyle} onClick={handleSignIn}>
+                Sign In
+              </button>
+              <button 
+                onClick={handleSignUp} 
+                style={{
+                  ...buttonStyle,
+                  backgroundColor: 'transparent',
+                  border: '1px solid #0DCAF0',
+                  color: '#0DCAF0'
+                }}
+              >
+                Sign Up
+              </button>
+            </>
           )}
         </div>
       </nav>

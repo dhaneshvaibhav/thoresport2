@@ -13,7 +13,7 @@ function AdminNavbar() {
   return (
     <>
       <nav style={styles.nav} className="admin-navbar">
-        <div style={styles.logo}>⚡ Admin Panel</div>
+        <div style={styles.logo}>thor admin</div>
         <div style={styles.links}>
           {!isLoggedIn ? (
             <Link to="/admin/auth" style={styles.link}>Login</Link>
