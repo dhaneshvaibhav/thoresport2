@@ -14,6 +14,7 @@ function TournamentDetails() {
   const [registeredTeams, setRegisteredTeams] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [userRegistered, setUserRegistered] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,6 +68,26 @@ function TournamentDetails() {
     };
     fetchRegisteredTeams();
   }, [id]);
+
+  useEffect(() => {
+    const checkUserRegistered = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || registeredTeams.length === 0) {
+        setUserRegistered(false);
+        return;
+      }
+      // Check if user is a member of any registered team
+      const { data: memberships } = await supabase
+        .from('team_members')
+        .select('team_id')
+        .eq('user_id', user.id)
+        .eq('status', 'active');
+      const registeredTeamIds = registeredTeams.map(t => t.id);
+      const isRegistered = (memberships || []).some(m => registeredTeamIds.includes(m.team_id));
+      setUserRegistered(isRegistered);
+    };
+    checkUserRegistered();
+  }, [registeredTeams]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -356,7 +377,59 @@ function TournamentDetails() {
                 )}
               </div>
             )}
-            {activeTab === 'groups' && <div style={{ color: '#fff', fontSize: 16 }}><b style={{ color: blue }}>Groups:</b><br />No groups assigned.</div>}
+            {activeTab === 'groups' && (
+              <div style={{ color: '#fff', fontSize: 16 }}>
+                <b style={{ color: blue }}>Groups:</b><br />
+                {!userRegistered ? (
+                  <div style={{ color: blue, marginTop: 24, textAlign: 'center', fontWeight: 700, fontSize: 18 }}>
+                    Groups unlock only when you are registered.
+                  </div>
+                ) : (
+                  (!tournament.lobby_urls || tournament.lobby_urls.length === 0) ? (
+                    <span>No lobbies assigned.</span>
+                  ) : (
+                    <div style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 32 }}>
+                      {tournament.lobby_urls.map((url, lobbyIdx) => {
+                        const startIdx = lobbyIdx * tournament.teams_per_lobby;
+                        const endIdx = startIdx + tournament.teams_per_lobby;
+                        const teamsInLobby = registeredTeams.slice(startIdx, endIdx);
+                        return (
+                          <div key={lobbyIdx} style={{
+                            background: '#181d24',
+                            borderRadius: 10,
+                            padding: 18,
+                            minWidth: 220,
+                            maxWidth: 260,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            boxShadow: `0 2px 8px ${blue}22`,
+                            border: `2px solid ${blue}`,
+                          }}>
+                            <div style={{ fontWeight: 700, color: blue, fontSize: 17, marginBottom: 6 }}>Lobby {lobbyIdx + 1}</div>
+                            <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: blue, fontWeight: 600, fontSize: 14, marginBottom: 10, wordBreak: 'break-all', textDecoration: 'underline' }}>{url}</a>
+                            <div style={{ width: '100%', marginTop: 8 }}>
+                              {teamsInLobby.length === 0 && <div style={{ color: '#888', textAlign: 'center' }}>No teams assigned.</div>}
+                              {Array.from({ length: tournament.teams_per_lobby }).map((_, i) => {
+                                const team = teamsInLobby[i];
+                                return team ? (
+                                  <div key={team.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, background: '#222', borderRadius: 6, padding: '6px 10px' }}>
+                                    {team.team_logo_url && <img src={team.team_logo_url} alt={team.team_name} style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover', background: '#111' }} />}
+                                    <span style={{ color: blue, fontWeight: 600, fontSize: 15 }}>{team.team_name}</span>
+                                  </div>
+                                ) : (
+                                  <div key={i} style={{ color: '#888', background: '#222', borderRadius: 6, padding: '6px 10px', marginBottom: 8, textAlign: 'center' }}>TBD</div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
