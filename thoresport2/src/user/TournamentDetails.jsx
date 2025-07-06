@@ -115,7 +115,7 @@ function TournamentDetails() {
       color: 'white',
       fontFamily: 'Montserrat, sans-serif',
       padding: '50px',
-      marginTop: '50px',
+     
     }}>
       {showRegisterModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#000a', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

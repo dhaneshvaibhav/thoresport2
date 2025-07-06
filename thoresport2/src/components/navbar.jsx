@@ -81,7 +81,7 @@ const Navbar = () => {
                 <i className="bi bi-bar-chart-line-fill nav-icon"></i>
                 <span className="nav-label">LEADERBOARD</span>
               </a>
-             
+
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 {user?.user_metadata?.avatar_url || user?.user_metadata?.profile_image ? (
                   <img

@@ -199,7 +199,6 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     fontFamily: "'Orbitron', sans-serif",
-    marginTop: '4rem',
   },
   card: {
     backgroundColor: '#000',
