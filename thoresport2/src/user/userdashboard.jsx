@@ -214,7 +214,7 @@ function UserDashboard() {
           {error && <p style={{ color: 'red' }}>{error}</p>}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
             {tournaments.map(t => (
-              <div key={t.id} style={{ border: '1px solid #ccc', borderRadius: 8, padding: 16, width: 300, background: '#1a1a1a', boxShadow: '0 2px 8px #0001' }}>
+              <div key={t.id} style={{ border: '1px solid #01E2E9', borderRadius: 8, padding: 16, width: 300, background: '#1a1a1a', boxShadow: '0 2px 10px #01E2E9' }}>
                 {t.logo_url && <img src={t.logo_url} alt={t.name} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 4, marginBottom: 8 }} />}
                 <h2 style={{ color: "#01E2E9", fontFamily: "Orbitron" }}>{t.name}</h2>
                 <p><b style={{ color: "#BABC19" }}>Prize Pool:</b> {t.prize_pool}</p>
@@ -222,8 +222,8 @@ function UserDashboard() {
                 <p><b style={{ color: "#BABC19" }}>End:</b> {t.end_date}</p>
                 <p><b style={{ color: "#BABC19" }}>Game:</b> {t.game}</p>
                 <p><b style={{ color: "#BABC19" }}>Mode:</b> {t.mode}</p>
-                <button onClick={() => setRegisterTournament(t)} style={{ marginTop: 8, padding: '8px 16px', background: '#4caf50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', marginRight: 8 }}>Join</button>
-                <button onClick={() => navigate(`/tournament/${t.id}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#2196f3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>View More</button>
+               <button onClick={() => alert(`Join ${t.name}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#4caf50', color: 'black', border: 'none', borderRadius: 4, cursor: 'pointer', marginRight: 8,fontFamily:"Orbitron" }}>Join</button>
+            <button onClick={() => navigate(`/tournament/${t.id}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#2196f3', color: 'black', border: 'none', borderRadius: 4, cursor: 'pointer',fontFamily:"Orbitron" }}>View More</button>
               </div>
             ))}
           </div>
@@ -261,7 +261,6 @@ const styles = {
     margin: '0 auto 3rem',
     aspectRatio: '16 / 9',
     overflow: 'hidden',
-    marginTop: '4rem',
     borderRadius: '12px',
   },
   slideWrapper: {

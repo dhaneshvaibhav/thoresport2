@@ -63,10 +63,6 @@ const Navbar = () => {
                 <i className="bi bi-bar-chart-line-fill nav-icon"></i>
                 <span className="nav-label">LEADERBOARD</span>
               </a>
-              <a href="/rankings" style={linkStyle}>
-                <i className="bi bi-trophy nav-icon"></i>
-                <span className="nav-label">RANKINGS</span>
-              </a>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <img
                   src={avatarUrl}

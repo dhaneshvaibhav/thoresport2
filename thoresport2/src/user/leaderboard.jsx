@@ -39,6 +39,7 @@ const containerStyle = {
   backgroundColor: '#000000',
   color: '#ffffff',
   textAlign: 'center',
+  marginTop: '10rem',
 };
 
 const headingStyle = {

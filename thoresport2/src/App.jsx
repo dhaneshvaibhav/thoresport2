@@ -22,7 +22,9 @@ import Leaderboard from './user/leaderboard';
 const UserLayout = ({ children }) => (
   <>
     <Navbar />
-    {children}
+    <div style={{ paddingTop: '70px', minHeight: '100vh' }}>
+      {children}
+    </div>
     <Footer />
   </>
 );
@@ -30,8 +32,9 @@ const UserLayout = ({ children }) => (
 const AdminLayout = ({ children }) => (
   <>
     <AdminNavbar />
-    {children}
-    <br />
+    <div style={{ paddingTop: '70px', minHeight: '100vh' }}>
+      {children}
+    </div>
     <Footer />
   </>
 );
@@ -40,7 +43,6 @@ function App() {
   return (
     <Router>
       <Routes>
-
 
         {/* Admin Routes */}
         <Route path="/admin/auth" element={<AdminLayout><Adminlogin /></AdminLayout>} />
@@ -60,6 +62,7 @@ function App() {
         <Route path="/tournament" element={<UserProtectedRoute><UserLayout><UserTournament /></UserLayout></UserProtectedRoute>} />
         <Route path="/tournament/:id" element={<UserProtectedRoute><UserLayout><TournamentDetails /></UserLayout></UserProtectedRoute>} />
         <Route path="/leaderboard" element={<UserProtectedRoute><UserLayout><Leaderboard /></UserLayout></UserProtectedRoute>} />
+
       </Routes>
     </Router>
   );
