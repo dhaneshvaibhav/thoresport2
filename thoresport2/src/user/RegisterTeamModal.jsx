@@ -162,10 +162,20 @@ function RegisterTeamModal({ tournament, onClose }) {
           )}
           <button
             type="submit"
-            disabled={loading || !selectedTeamId}
+            disabled={
+              loading ||
+              !selectedTeamId ||
+              (selectedTeamId && (teamDetails?.[selectedTeamId] || 0) < 4)
+            }
             style={{
               ...styles.confirmBtn,
-              ...(loading || !selectedTeamId ? styles.confirmBtnDisabled : {}),
+              ...(
+                loading ||
+                !selectedTeamId ||
+                (selectedTeamId && (teamDetails?.[selectedTeamId] || 0) < 4)
+                  ? styles.confirmBtnDisabled
+                  : {}
+              ),
             }}
           >
             Confirm Slot

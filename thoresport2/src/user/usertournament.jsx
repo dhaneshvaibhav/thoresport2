@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
+import RegisterTeamModal from './RegisterTeamModal';
 
 function UserTournament() {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [registerTournament, setRegisterTournament] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,11 +47,27 @@ function UserTournament() {
             <p style={{color:'white', fontFamily:"Orbitron"}}><b style={{ color: "#BABC19" }}>End:</b> {t.end_date}</p>
             <p style={{color:'white', fontFamily:"Orbitron"}}><b style={{ color: "#BABC19" }}>Game:</b> {t.game}</p>
             <p style={{color:'white', fontFamily:"Orbitron"}}><b style={{ color: "#BABC19" }}>Mode:</b> {t.mode}</p>
-            <button onClick={() => alert(`Join ${t.name}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#4caf50', color: 'black', border: 'none', borderRadius: 4, cursor: 'pointer', marginRight: 8,fontFamily:"Orbitron" }}>Join</button>
+            <button
+              onClick={() => {
+                setRegisterTournament(t);
+                setShowRegisterModal(true);
+              }}
+              style={{ marginTop: 8, padding: '8px 16px', background: '#4caf50', color: 'black', border: 'none', borderRadius: 4, cursor: 'pointer', marginRight: 8, fontFamily: "Orbitron" }}
+            >
+              Join
+            </button>
             <button onClick={() => navigate(`/tournament/${t.id}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#2196f3', color: 'black', border: 'none', borderRadius: 4, cursor: 'pointer',fontFamily:"Orbitron" }}>View More</button>
           </div>
         ))}
       </div>
+      {showRegisterModal && registerTournament && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <RegisterTeamModal
+            tournament={registerTournament}
+            onClose={() => setShowRegisterModal(false)}
+          />
+        </div>
+      )}
     </div>
   );
 }
