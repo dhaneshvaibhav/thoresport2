@@ -57,7 +57,7 @@ function UserDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchTournaments = async () => {
+    const fetchAll = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/tournaments`);
         setTournaments(res.data);
