@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
+import axios from 'axios';
 
 const neon = '#00f6ff';
 
@@ -115,6 +116,17 @@ function RegisterTeamModal({ tournament, onClose }) {
             setError(regError.message || 'Registration failed.');
           } else {
             setSuccess('Team registered successfully!');
+            // Send registration email to all team members
+            const emails = (teamMembers[selectedTeamId] || [])
+              .map(m => m.profiles?.email)
+              .filter(Boolean);
+            if (emails.length > 0) {
+              axios.post('http://localhost:4000/send-registration-email', {
+                teamEmails: emails,
+                subject: `Registered for ${tournament?.name || 'Tournament'}`,
+                html: `<p>Your team has been registered for <b>${tournament?.name || 'the tournament'}</b>!</p>`
+              }).catch(() => {}); // Optionally handle errors
+            }
           }
           setLoading(false);
         }} style={styles.form}>

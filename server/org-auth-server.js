@@ -3,9 +3,9 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const router = express.Router();
+router.use(cors());
+router.use(express.json());
 
 const supabase = createClient(
   "https://ltsombfuwcalqigfxccd.supabase.co",
@@ -13,7 +13,7 @@ const supabase = createClient(
 );
 const JWT_SECRET = 'cococolapepsi'; // Use a strong secret in production
 
-app.post('/org-login', async (req, res) => {
+router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const { data, error } = await supabase
     .from('organizations')
@@ -35,7 +35,7 @@ app.post('/org-login', async (req, res) => {
   res.json({ token });
 });
 
-app.post('/create-tournament', async (req, res) => {
+router.post('/create-tournament', async (req, res) => {
   // Get the token from the Authorization header
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'No token provided' });
@@ -97,7 +97,7 @@ app.post('/create-tournament', async (req, res) => {
   res.json({ success: true });
 });
 
-app.get('/tournaments', async (req, res) => {
+router.get('/tournaments', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('tournaments')
@@ -111,4 +111,4 @@ app.get('/tournaments', async (req, res) => {
   }
 });
 
-app.listen(4000, () => console.log('Org Auth server running on port 4000')); 
+module.exports = router; 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
+import axios from 'axios';
 
 function AdminTournamentDetails() {
   const { id } = useParams();
@@ -171,6 +172,36 @@ function AdminTournamentDetails() {
       setMessage('✅ Announcement posted!');
       setAnnouncementText('');
       setShowAnnouncementForm(false);
+
+      // --- Send email to all team captains of registered teams ---
+      // 1. Get all registered teams for this tournament
+      const { data: registrations } = await supabase
+        .from('tournament_registrations')
+        .select('team_id')
+        .eq('tournament_id', id)
+        .eq('status', 'registered');
+      const teamIds = (registrations || []).map(r => r.team_id);
+
+      if (teamIds.length > 0) {
+        // 2. Get captains for these teams
+        const { data: captains } = await supabase
+          .from('team_members')
+          .select('profiles ( email )')
+          .in('team_id', teamIds)
+          .eq('is_captain', true)
+          .eq('status', 'active');
+        const emails = (captains || []).map(c => c.profiles?.email).filter(Boolean);
+
+        // 3. Send the announcement email
+        if (emails.length > 0) {
+          axios.post('http://localhost:4000/send-announcement-email', {
+            emails,
+            subject: `New Announcement for ${tournament?.name || 'Tournament'}`,
+            html: `<p>${announcementText.trim()}</p>`
+          }).catch(() => {});
+        }
+      }
+      // --- END ---
     } catch (err) {
       setMessage('❌ Error posting announcement: ' + (err.message || 'Unknown error'));
     }
