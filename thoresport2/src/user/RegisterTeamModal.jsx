@@ -104,7 +104,7 @@ function RegisterTeamModal({ tournament, onClose }) {
             setLoading(false);
             return;
           }
-          // Register team
+          
           const { error: regError } = await supabase
             .from('tournament_registrations')
             .insert({
@@ -114,20 +114,33 @@ function RegisterTeamModal({ tournament, onClose }) {
             });
           if (regError) {
             setError(regError.message || 'Registration failed.');
-          } else {
-            setSuccess('Team registered successfully!');
-            // Send registration email to all team members
-            const emails = (teamMembers[selectedTeamId] || [])
-              .map(m => m.profiles?.email)
-              .filter(Boolean);
-            if (emails.length > 0) {
-              axios.post('http://localhost:4000/send-registration-email', {
-                teamEmails: emails,
-                subject: `Registered for ${tournament?.name || 'Tournament'}`,
-                html: `<p>Your team has been registered for <b>${tournament?.name || 'the tournament'}</b>!</p>`
-              }).catch(() => {}); // Optionally handle errors
-            }
+            setLoading(false);
+            return;
           }
+          // After successful registration, send a confirmation email to all team members
+          const members = (teamMembers[selectedTeamId] || []).map(m => m.profiles?.email).filter(Boolean);
+          if (members.length > 0) {
+            await axios.post('http://localhost:4000/send-registration-email', {
+              teamEmails: members,
+              subject: `Team Registered for ${tournament?.name}`,
+              html: `<h2>Your team is registered for the tournament: ${tournament?.name}</h2>
+                     <p>Team Members: ${members.join(', ')}</p>`
+            });
+          }
+          // Build a detailed success message
+          setSuccess(
+            <div>
+              <div>Your team is registered for the tournament <b>{tournament?.name}</b>.</div>
+              <div>
+                <b>Team Members:</b>
+                <ul>
+                  {members.map(email => (
+                    <li key={email}>{email}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          );
           setLoading(false);
         }} style={styles.form}>
           {registeredTeams.length === 0 ? (

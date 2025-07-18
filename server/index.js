@@ -1,11 +1,18 @@
 const express = require('express');
 const sendMail = require('./sendMail');
 require('dotenv').config();
+const cors = require('cors');
 
 // Import org-auth-server router
 const orgRouter = require('./org-auth-server');
 
 const app = express();
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Mount org endpoints at /org
