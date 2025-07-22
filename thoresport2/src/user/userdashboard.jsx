@@ -150,11 +150,64 @@ function UserDashboard() {
           0% { transform: translateY(0); }
           100% { transform: translateY(-60vh); }
         }
+
+        @media (max-width: 600px) {
+          .ts-hero-content {
+            flex-direction: column !important;
+            gap: 1.2rem !important;
+            min-height: 0 !important;
+            padding: 0 !important;
+          }
+          .ts-video-section {
+            min-width: 0 !important;
+            min-height: 160px !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            border-radius: 0 !important;
+          }
+          .ts-video {
+            min-width: 0 !important;
+            min-height: 160px !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            border-radius: 0 !important;
+          }
+          .ts-tournament-list {
+            flex-direction: column !important;
+            gap: 1rem !important;
+            align-items: flex-start !important;
+            width: 100vw !important;
+            justify-content: flex-start !important;
+          }
+          .ts-tournament-card {
+            width: 88vw !important;
+            max-width: 300px !important;
+            padding: 8px !important;
+            margin: 0 0 2rem 4vw !important;
+            box-sizing: border-box !important;
+          }
+          .ts-tournament-card h2,
+          .myTeamsBox b {
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            white-space: normal !important;
+            text-overflow: ellipsis !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+            font-size: 1.1rem !important;
+          }
+          .ts-tournament-list-wrapper {
+            width: 100vw !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+          }
+        }
       `}</style>
     <div style={styles.dashboardBg}>
       {/* Video Hero Section */}
       <div style={styles.heroContainer}>
-        <div style={styles.heroContent}>
+        <div style={styles.heroContent} className="ts-hero-content">
           <div style={styles.descriptionSection}>
             <h1 style={styles.mainTitle}>THORESPORT</h1>
             <h2 style={styles.subtitle}>The Ultimate Gaming Tournament Platform</h2>
@@ -172,7 +225,7 @@ function UserDashboard() {
             </div>
           </div>
 
-          <div style={styles.videoSection}>
+          <div style={styles.videoSection} className="ts-video-section">
             <div
               style={{
                 ...styles.slideWrapper,
@@ -189,6 +242,7 @@ function UserDashboard() {
                   title={currentVideo.title}
                   frameBorder="0"
                   style={styles.video}
+                  className="ts-video"
                 />
               ) : (
                 <div
@@ -312,10 +366,10 @@ function UserDashboard() {
           {loading && <p>Loading tournaments...</p>}
           {error && <p style={{ color: 'red' }}>{error}</p>}
 
-          <div style={styles.tournamentListWrapper}>
-            <div style={styles.tournamentList}>
+          <div style={styles.tournamentListWrapper} className="ts-tournament-list-wrapper">
+            <div style={styles.tournamentList} className="ts-tournament-list">
               {tournaments.map(t => (
-                <div key={t.id} style={styles.tournamentCard}>
+                <div key={t.id} style={styles.tournamentCard} className="ts-tournament-card">
                   {t.logo_url && <img src={t.logo_url} alt={t.name} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 4 }} />}
                   <h2 style={{ color: '#01E2E9', fontFamily: 'Orbitron' }}>{t.name}</h2>
                   <p><b>Prize Pool:</b> {t.prize_pool}</p>
@@ -375,27 +429,30 @@ function UserDashboard() {
 const styles = { 
   dashboardBg: {
     minHeight: '100vh',
+    width: '100vw',
     background: 'linear-gradient(135deg, #000 60%, #011f2a 100%)',
     animation: 'bgMove 10s linear infinite',
     color: '#fff',
     fontFamily: 'Orbitron, sans-serif',
+    padding: '4rem 0',
+    boxSizing: 'border-box',
+    overflowX: 'hidden',
   },
   '@keyframes bgMove': {
-    '0%': { backgroundPosition: '0% 50%' },
+    '50%': { backgroundPosition: '100% 50%' },
     '100%': { backgroundPosition: '100% 50%' },
   },
   heroContainer: {
     width: '100%',
-    maxWidth: '1200px',
-    margin: '0 auto 3rem',
-    padding: '0 2rem',
+    maxWidth: '100%',
+    margin: '0 auto 5rem',
+    padding: '0 1rem',
   },
   heroContent: {
     display: 'flex',
-    gap: '5rem',
+    gap: '3rem',
     alignItems: 'center',
-    minHeight: '500px',
-    
+    minHeight: '350px',
   },
   descriptionSection: {
     flex: '0.8',
@@ -410,38 +467,38 @@ const styles = {
     justifyContent: 'center',
   },
   mainTitle: {
-    fontSize: '3.2rem',
-    marginBottom: '1.2rem',
+    fontSize: '2.2rem',
+    marginBottom: '0.8rem',
     color: '#01E2E9',
     fontFamily: 'Orbitron, sans-serif',
     fontWeight: 'bold',
-    textShadow: '0 0 24px #01E2E9',
+    textShadow: '0 0 18px #01E2E9',
   },
   subtitle: {
-    fontSize: '1.7rem',
-    marginBottom: '1.7rem',
+    fontSize: '1.1rem',
+    marginBottom: '1.1rem',
     color: '#BABC19',
     fontFamily: 'Orbitron, sans-serif',
   },
   description: {
-    marginBottom: '2.2rem',
-    fontSize: '1.15rem',
-    lineHeight: '1.7',
+    marginBottom: '1.2rem',
+    fontSize: '0.95rem',
+    lineHeight: '1.5',
     color: '#fff',
   },
   features: {
-    marginBottom: '2.2rem',
+    marginBottom: '1.2rem',
   },
   feature: {
     display: 'flex',
     alignItems: 'center',
-    marginBottom: '1.1rem',
-    fontSize: '1.1rem',
+    marginBottom: '0.7rem',
+    fontSize: '0.95rem',
     color: '#fff',
   },
   featureIcon: {
-    marginRight: '1.1rem',
-    fontSize: '1.6rem',
+    marginRight: '0.7rem',
+    fontSize: '1.2rem',
   },
   ctaButton: {
     padding: '1rem 2rem',
@@ -471,6 +528,10 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     transition: 'box-shadow 0.3s',
+    minWidth: 220,
+    minHeight: 120,
+    width: '80%',
+    maxWidth: 420,
   },
   slideWrapper: {
     width: '100%',
@@ -479,7 +540,12 @@ const styles = {
   video: {
     width: '100%',
     height: '100%',
+    minWidth: 220,
+    minHeight: 120,
+    aspectRatio: '16 / 9',
     border: 'none',
+    display: 'block',
+    objectFit: 'cover',
   },
   thumbnail: {
     width: '100%',
@@ -601,6 +667,8 @@ const styles = {
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
   tournamentList: {
     display: 'flex',
@@ -614,8 +682,8 @@ const styles = {
   tournamentCard: {
     border: '1.5px solid #01E2E9',
     borderRadius: 14,
-    padding: 20,
-    width: 300,
+    padding: 12,
+    width: 220,
     background: 'rgba(26,26,26,0.7)',
     boxShadow: '0 0 18px #01E2E955',
     display: 'flex',
@@ -623,6 +691,7 @@ const styles = {
     alignItems: 'center',
     transition: 'transform 0.2s, box-shadow 0.2s',
     backdropFilter: 'blur(6px)',
+    
   },
   tournamentButtonGroup: {
     width: '100%',
@@ -633,13 +702,13 @@ const styles = {
   },
   tournamentButton: {
     width: '100%',
-    padding: '12px 0',
+    padding: '7px 0',
     background: 'linear-gradient(90deg, #01E2E9 60%, #1976d2 100%)',
     color: '#fff',
     border: 'none',
     borderRadius: 6,
     fontWeight: 'bold',
-    fontSize: '1rem',
+    fontSize: '0.85rem',
     cursor: 'pointer',
     transition: 'background 0.2s, transform 0.2s, box-shadow 0.2s',
     boxShadow: '0 0 8px #01E2E955',
