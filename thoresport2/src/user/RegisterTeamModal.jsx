@@ -105,32 +105,38 @@ function RegisterTeamModal({ tournament, onClose }) {
             return;
           }
           
-          const { error: regError } = await supabase
+          const { data: regData, error: regError } = await supabase
             .from('tournament_registrations')
             .insert({
               tournament_id: tournament?.id,
               team_id: selectedTeamId,
-              status: 'registered'
-            });
+              status: 'pending'
+            })
+            .select('id')
+            .single();
+
           if (regError) {
             setError(regError.message || 'Registration failed.');
             setLoading(false);
             return;
           }
-          // After successful registration, send a confirmation email to all team members
+          const registrationId = regData?.id;
           const members = (teamMembers[selectedTeamId] || []).map(m => m.profiles?.email).filter(Boolean);
-          if (members.length > 0) {
-            await axios.post('http://localhost:4000/send-registration-email', {
+          if (members.length > 0 && registrationId) {
+            await axios.post('http://localhost:4000/tournament-invite', {
+              registrationId,
+              teamId: selectedTeamId,
+              tournamentId: tournament?.id,
               teamEmails: members,
-              subject: `Team Registered for ${tournament?.name}`,
-              html: `<h2>Your team is registered for the tournament: ${tournament?.name}</h2>
-                     <p>Team Members: ${members.join(', ')}</p>`
+              tournamentName: tournament?.name,
             });
           }
           // Build a detailed success message
           setSuccess(
             <div>
-              <div>Your team is registered for the tournament <b>{tournament?.name}</b>.</div>
+              <div>
+                Your team registration for <b>{tournament?.name}</b> is <b>pending unanimous confirmation</b> from all team members.
+              </div>
               <div>
                 <b>Team Members:</b>
                 <ul>
@@ -138,6 +144,13 @@ function RegisterTeamModal({ tournament, onClose }) {
                     <li key={email}>{email}</li>
                   ))}
                 </ul>
+              </div>
+              <div style={{ marginTop: 8 }}>
+                <b>Action Required:</b> <br />
+                <span>
+                  <b>Every</b> member must accept participation via the email sent to them.<br />
+                  The team will be registered <b>only if all members accept</b>.
+                </span>
               </div>
             </div>
           );
