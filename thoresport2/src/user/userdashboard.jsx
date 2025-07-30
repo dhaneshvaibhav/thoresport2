@@ -152,6 +152,66 @@ function UserDashboard() {
         }
 
         @media (max-width: 600px) {
+          .ts-team-section {
+            padding: 1.2rem 0.5rem !important;
+            max-width: 100vw !important;
+            margin: 0 !important;
+          }
+          .ts-create-team-section {
+            padding: 1.2rem 0.5rem !important;
+            margin-bottom: 1.5rem !important;
+            border-radius: 10px !important;
+            width: 98vw !important;
+            min-width: 0 !important;
+            max-width: 100vw !important;
+          }
+          .ts-create-team-btn {
+            font-size: 1rem !important;
+            padding: 0.7rem 1.2rem !important;
+            margin-bottom: 1.2rem !important;
+          }
+          .ts-my-teams-box {
+            padding: 1rem !important;
+            border-radius: 8px !important;
+            margin-top: 10px !important;
+          }
+          .ts-my-teams-box h3 {
+            font-size: 1.1rem !important;
+            margin-bottom: 8px !important;
+          }
+          .ts-my-teams-box b {
+            font-size: 1rem !important;
+            max-width: 90vw !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            display: inline-block !important;
+          }
+          .ts-my-teams-box ul {
+            font-size: 0.95rem !important;
+          }
+          .ts-my-teams-box img {
+            width: 28px !important;
+            height: 28px !important;
+          }
+          .ts-my-teams-box button {
+            font-size: 0.95rem !important;
+            padding: 6px 10px !important;
+            margin-left: 8px !important;
+          }
+          .ts-team-invites {
+            padding: 10px !important;
+            font-size: 0.95rem !important;
+            border-radius: 8px !important;
+          }
+          .ts-team-invites h3 {
+            font-size: 1rem !important;
+          }
+          .ts-team-invites button {
+            font-size: 0.95rem !important;
+            padding: 6px 10px !important;
+            margin-left: 6px !important;
+          }
           .ts-hero-content {
             flex-direction: column !important;
             gap: 1.2rem !important;
@@ -160,47 +220,104 @@ function UserDashboard() {
           }
           .ts-video-section {
             min-width: 0 !important;
-            min-height: 160px !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            border-radius: 0 !important;
+            min-height: 100px !important;
+            height: 140px !important;
+            width: 90vw !important;
+            max-width: 90vw !important;
+            border-radius: 8px !important;
+            margin: 0 auto 1.5rem auto !important;
           }
           .ts-video {
             min-width: 0 !important;
-            min-height: 160px !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            border-radius: 0 !important;
+            min-height: 100px !important;
+            height: 140px !important;
+            width: 90vw !important;
+            max-width: 90vw !important;
+            border-radius: 8px !important;
           }
           .ts-tournament-list {
             flex-direction: column !important;
-            gap: 1rem !important;
+            gap: 1.2rem !important;
             align-items: flex-start !important;
             width: 100vw !important;
             justify-content: flex-start !important;
+            padding-left: 2vw !important;
+            padding-right: 2vw !important;
           }
           .ts-tournament-card {
-            width: 88vw !important;
-            max-width: 300px !important;
-            padding: 8px !important;
-            margin: 0 0 2rem 4vw !important;
+            width: 92vw !important;
+            max-width: 340px !important;
+            min-height: 260px !important;
+            max-height: 260px !important;
+            height: 260px !important;
+            padding: 10px !important;
+            margin: 0 0 2rem 0 !important;
             box-sizing: border-box !important;
+            border-radius: 10px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            overflow: hidden !important;
+            position: relative !important;
+            background: rgba(26,26,26,0.7) !important;
           }
-          .ts-tournament-card h2,
-          .myTeamsBox b {
+          .ts-tournament-card h2 {
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            width: 100% !important;
+            margin: 0 0 0.3rem 0 !important;
+            font-size: 1.1rem !important;
+            font-family: Orbitron, sans-serif !important;
+          }
+          .ts-tournament-card p {
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            width: 100% !important;
+            margin: 0 0 0.3rem 0 !important;
+            font-size: 0.98rem !important;
+          }
+          .ts-tournament-card img {
+            width: 100% !important;
+            height: 90px !important;
+            object-fit: cover !important;
+            border-radius: 6px !important;
+            margin-bottom: 0.5rem !important;
+            flex-shrink: 0 !important;
+          }
+          .ts-tournament-card .tournamentButtonGroup {
+            margin-top: auto !important;
+            width: 100% !important;
+          }
+          .ts-tournament-card img {
+            width: 100% !important;
+            height: 90px !important;
+            object-fit: cover !important;
+            border-radius: 6px !important;
+            margin-bottom: 0.5rem !important;
+          }
+          .ts-tournament-card h2 {
+            font-size: 1.1rem !important;
             word-break: break-word !important;
             overflow-wrap: break-word !important;
             white-space: normal !important;
             text-overflow: ellipsis !important;
             max-width: 100% !important;
             overflow: hidden !important;
-            font-size: 1.1rem !important;
+          }
+          .ts-tournament-card p {
+            font-size: 0.98rem !important;
+            margin-bottom: 0.3rem !important;
           }
           .ts-tournament-list-wrapper {
             width: 100vw !important;
             display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
           }
         }
       `}</style>
@@ -261,20 +378,20 @@ function UserDashboard() {
 
       <div style={styles.neonDivider} />
 { /* Teams and Tournaments Section */}
-     <div style={{ padding: '5rem', maxWidth: 1200, margin: '0 auto' }}>
-  <div style={styles.createTeamSection}>
+     <div className="ts-team-section" style={{ padding: '5rem', maxWidth: 1200, margin: '0 auto' }}>
+  <div className="ts-create-team-section" style={styles.createTeamSection}>
     <h2 style={styles.sectionHeading}>
       <span style={styles.sectionIcon}>👥</span> My Teams & Invitations
     </h2>
 
     {myTeams.length === 0 && (
-      <button style={styles.createTeamButton} onClick={() => setShowCreateTeam(true)}>
+      <button className="ts-create-team-btn" style={styles.createTeamButton} onClick={() => setShowCreateTeam(true)}>
         Create Team
       </button>
     )}
 
     {pendingInvites.length > 0 && (
-      <div style={{ marginBottom: 24, padding: 16, background: '#1a1a1a', borderRadius: 8 }}>
+      <div className="ts-team-invites" style={{ marginBottom: 24, padding: 16, background: '#1a1a1a', borderRadius: 8 }}>
         <h3 style={{ textAlign: 'center' }}>Team Invitations</h3>
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
           {pendingInvites.map(inv => (
@@ -289,7 +406,7 @@ function UserDashboard() {
     )}
 
     {myTeams.length > 0 && (
-      <div style={styles.myTeamsBox}>
+      <div className="ts-my-teams-box" style={styles.myTeamsBox}>
         <h3 style={{ textAlign: 'center', fontFamily: 'Orbitron', color: 'lightblue', marginBottom: "12px"}}>My Teams</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {myTeams.map(team => (
@@ -683,15 +800,22 @@ const styles = {
     border: '1.5px solid #01E2E9',
     borderRadius: 14,
     padding: 12,
-    width: 220,
+    width: 240,
+    minWidth: 220,
+    maxWidth: 340,
+    minHeight: 400,
+    maxHeight: 400,
+    height: 400,
     background: 'rgba(26,26,26,0.7)',
     boxShadow: '0 0 18px #01E2E955',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'flex-start',
     transition: 'transform 0.2s, box-shadow 0.2s',
     backdropFilter: 'blur(6px)',
-    
+    overflow: 'hidden',
+    position: 'relative',
   },
   tournamentButtonGroup: {
     width: '100%',

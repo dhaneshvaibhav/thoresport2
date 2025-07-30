@@ -2,27 +2,58 @@ import React from 'react';
 
 const Leaderboard = () => {
   return (
-    <div style={containerStyle}>
-      {/* Glowing Logo */}
-      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <h1 style={headingStyle}>LEADERBOARD</h1>
-      </div>
+    <>
+      <style>{`
+        @media (max-width: 600px) {
+          .lb-container {
+            padding: 1rem !important;
+            max-width: 98vw !important;
+            width: 98vw !important;
+            margin: 2rem auto !important;
+            border-radius: 8px !important;
+            font-size: 0.95rem !important;
+          }
+          .lb-heading {
+            font-size: 2rem !important;
+          }
+          .lb-content {
+            padding: 1rem !important;
+            border-radius: 6px !important;
+            margin-top: 1rem !important;
+          }
+          .lb-subheading {
+            font-size: 1.2rem !important;
+          }
+          .lb-text {
+            font-size: 1rem !important;
+          }
+          .lb-description {
+            font-size: 0.95rem !important;
+          }
+        }
+      `}</style>
+      <div style={containerStyle} className="lb-container">
+        {/* Glowing Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h1 style={headingStyle} className="lb-heading">LEADERBOARD</h1>
+        </div>
 
-      <div style={contentStyle}>
-        <h2 style={subHeadingStyle}>🚧 COMING SOON 🚧</h2>
-        <p style={textStyle}>Wait for version 2.0</p>
-        <p style={descriptionStyle}>
-          We're working hard to bring you the most comprehensive leaderboard system.
-          Stay tuned for exciting updates!
-        </p>
-      </div>
+        <div style={contentStyle} className="lb-content">
+          <h2 style={subHeadingStyle} className="lb-subheading">🚧 COMING SOON 🚧</h2>
+          <p style={textStyle} className="lb-text">Wait for version 2.0</p>
+          <p style={descriptionStyle} className="lb-description">
+            We're working hard to bring you the most comprehensive leaderboard system.
+            Stay tuned for exciting updates!
+          </p>
+        </div>
 
-      {/* Orbitron Font */}
-      <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap"
-        rel="stylesheet"
-      />
-    </div>
+        {/* Orbitron Font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
+      </div>
+    </>
   );
 };
 
