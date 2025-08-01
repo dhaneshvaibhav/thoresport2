@@ -247,9 +247,9 @@ function UserDashboard() {
           .ts-tournament-card {
             width: 92vw !important;
             max-width: 340px !important;
-            min-height: 260px !important;
-            max-height: 260px !important;
-            height: 260px !important;
+            min-height: 340px !important;
+            max-height: 340px !important;
+            height: 340px !important;
             padding: 10px !important;
             margin: 0 0 2rem 0 !important;
             box-sizing: border-box !important;

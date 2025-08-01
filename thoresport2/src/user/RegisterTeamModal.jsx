@@ -216,7 +216,7 @@ function RegisterTeamModal({ tournament, onClose }) {
               ),
             }}
           >
-            Confirm Slot
+            Send Confirmation Emails
           </button>
           {error && <div style={styles.error}>{error}</div>}
           {success && <div style={styles.success}>{success}</div>}

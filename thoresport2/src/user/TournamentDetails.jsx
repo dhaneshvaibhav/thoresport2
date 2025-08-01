@@ -5,6 +5,8 @@ import { FaBullhorn, FaBook, FaChartBar, FaUsers, FaLayerGroup } from 'react-ico
 import RegisterTeamModal from './RegisterTeamModal';
 
 function TournamentDetails() {
+  const [teamResponseStatus, setTeamResponseStatus] = useState(null);
+  const [userTeamId, setUserTeamId] = useState(null);
   const { id } = useParams();
   const [tournament, setTournament] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,6 +19,58 @@ function TournamentDetails() {
   const [userRegistered, setUserRegistered] = useState(false);
   const navigate = useNavigate();
 
+  // Fetch the current user's team registration and response status for this tournament
+  useEffect(() => {
+    const fetchTeamResponseStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      // Find the user's active team for this tournament
+      const { data: teamMemberships } = await supabase
+        .from('team_members')
+        .select('team_id')
+        .eq('user_id', user.id)
+        .eq('status', 'active');
+      if (!teamMemberships || teamMemberships.length === 0) return;
+      // Find the user's team that is registered for this tournament
+      const { data: reg } = await supabase
+        .from('tournament_registrations')
+        .select('id, team_id, status')
+        .eq('tournament_id', id)
+        .in('team_id', teamMemberships.map(m => m.team_id));
+      if (!reg || reg.length === 0) return;
+      const userTeam = reg[0];
+      setUserTeamId(userTeam.team_id);
+      // Get all members of this team
+      const { data: members } = await supabase
+        .from('team_members')
+        .select('profiles ( username, email )')
+        .eq('team_id', userTeam.team_id)
+        .eq('status', 'active');
+      // Get all responses for this registration
+      const { data: responses } = await supabase
+        .from('tournament_join_responses')
+        .select('member_email, response')
+        .eq('registration_id', userTeam.id);
+      // Map responses by email
+      const responseMap = {};
+      (responses || []).forEach(r => {
+        responseMap[r.member_email] = r.response;
+      });
+      // Build status list
+      const statusList = (members || []).map(m => {
+        const email = m.profiles?.email;
+        return {
+          email,
+          username: m.profiles?.username,
+          response: responseMap[email] || 'not_declared',
+        };
+      });
+      setTeamResponseStatus(statusList);
+    };
+    fetchTeamResponseStatus();
+  }, [id, registeredTeams]);
+
+  // Fetch tournament details
   useEffect(() => {
     const fetchTournament = async () => {
       setLoading(true);
@@ -355,24 +409,35 @@ function TournamentDetails() {
                   <span>No teams registered yet.</span>
                 ) : (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginTop: 16 }}>
-                    {registeredTeams.map(team => (
-                      <div key={team.id} style={{
-                        background: '#181d24',
-                        borderRadius: 10,
-                        padding: 16,
-                        minWidth: 180,
-                        maxWidth: 220,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        boxShadow: `0 2px 8px ${blue}22`
-                      }}>
-                        {team.team_logo_url && (
-                          <img src={team.team_logo_url} alt={team.team_name} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, marginBottom: 8, background: '#222' }} />
-                        )}
-                        <span style={{ fontWeight: 700, color: blue, fontSize: 18, textAlign: 'center' }}>{team.team_name}</span>
-                      </div>
-                    ))}
+                    {registeredTeams.map(team => {
+                      // For each team, fetch their members' responses
+                      // We'll show 'Confirmed' if all accepted, else 'Yet to confirm'
+                      // This is a simple client-side check for the user's own team, for others we show 'Yet to confirm' (unless you want to fetch all responses for all teams)
+                      let statusLabel = 'Yet to confirm';
+                      if (userTeamId === team.id && teamResponseStatus && teamResponseStatus.length > 0) {
+                        const allAccepted = teamResponseStatus.every(m => m.response === 'accept');
+                        statusLabel = allAccepted ? 'Confirmed' : 'Yet to confirm';
+                      }
+                      return (
+                        <div key={team.id} style={{
+                          background: '#181d24',
+                          borderRadius: 10,
+                          padding: 16,
+                          minWidth: 180,
+                          maxWidth: 220,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          boxShadow: `0 2px 8px ${blue}22`
+                        }}>
+                          {team.team_logo_url && (
+                            <img src={team.team_logo_url} alt={team.team_name} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, marginBottom: 8, background: '#222' }} />
+                          )}
+                          <span style={{ fontWeight: 700, color: blue, fontSize: 18, textAlign: 'center' }}>{team.team_name}</span>
+                          <span style={{ marginTop: 6, color: statusLabel === 'Confirmed' ? 'limegreen' : '#ffb300', fontWeight: 700, fontSize: 14 }}>{statusLabel}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -385,48 +450,102 @@ function TournamentDetails() {
                     Groups unlock only when you are registered.
                   </div>
                 ) : (
-                  (!tournament.lobby_urls || tournament.lobby_urls.length === 0) ? (
-                    <span>No lobbies assigned.</span>
-                  ) : (
-                    <div style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 32 }}>
-                      {tournament.lobby_urls.map((url, lobbyIdx) => {
-                        const startIdx = lobbyIdx * tournament.teams_per_lobby;
-                        const endIdx = startIdx + tournament.teams_per_lobby;
-                        const teamsInLobby = registeredTeams.slice(startIdx, endIdx);
-                        return (
-                          <div key={lobbyIdx} style={{
-                            background: '#181d24',
-                            borderRadius: 10,
-                            padding: 18,
-                            minWidth: 220,
-                            maxWidth: 260,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            boxShadow: `0 2px 8px ${blue}22`,
-                            border: `2px solid ${blue}`,
-                          }}>
-                            <div style={{ fontWeight: 700, color: blue, fontSize: 17, marginBottom: 6 }}>Lobby {lobbyIdx + 1}</div>
-                            <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: blue, fontWeight: 600, fontSize: 14, marginBottom: 10, wordBreak: 'break-all', textDecoration: 'underline' }}>{url}</a>
-                            <div style={{ width: '100%', marginTop: 8 }}>
-                              {teamsInLobby.length === 0 && <div style={{ color: '#888', textAlign: 'center' }}>No teams assigned.</div>}
-                              {Array.from({ length: tournament.teams_per_lobby }).map((_, i) => {
-                                const team = teamsInLobby[i];
-                                return team ? (
-                                  <div key={team.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, background: '#222', borderRadius: 6, padding: '6px 10px' }}>
-                                    {team.team_logo_url && <img src={team.team_logo_url} alt={team.team_name} style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover', background: '#111' }} />}
-                                    <span style={{ color: blue, fontWeight: 600, fontSize: 15 }}>{team.team_name}</span>
-                                  </div>
-                                ) : (
-                                  <div key={i} style={{ color: '#888', background: '#222', borderRadius: 6, padding: '6px 10px', marginBottom: 8, textAlign: 'center' }}>TBD</div>
-                                );
-                              })}
+                  <>
+                    {/* Show team response status for the user's team */}
+                    {teamResponseStatus && teamResponseStatus.length > 0 && (
+                      <div style={{
+                        background: '#181d24',
+                        borderRadius: 10,
+                        padding: 16,
+                        marginBottom: 24,
+                        boxShadow: `0 2px 8px ${blue}22`,
+                        color: '#fff',
+                        fontSize: 15,
+                        maxWidth: 400,
+                        margin: '0 auto 24px auto',
+                      }}>
+                        <div style={{ fontWeight: 700, color: blue, fontSize: 17, marginBottom: 8 }}>Your Team Confirmation Status</div>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                          {teamResponseStatus.map(member => (
+                            <li key={member.email} style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ fontWeight: 600 }}>{member.username || member.email}</span>
+                              {member.response === 'accept' && <span style={{ color: 'limegreen', fontWeight: 700 }}>&#10003; Accepted</span>}
+                              {member.response === 'decline' && <span style={{ color: '#ff0033', fontWeight: 700 }}>&#10007; Declined</span>}
+                              {member.response === 'not_declared' && <span style={{ color: '#ffb300', fontWeight: 700 }}>Pending</span>}
+                            </li>
+                          ))}
+                        </ul>
+                        <div style={{ marginTop: 10, fontWeight: 600 }}>
+                          Accepted: {teamResponseStatus.filter(m => m.response === 'accept').length} / {teamResponseStatus.length}
+                        </div>
+                        <div style={{ fontWeight: 600 }}>
+                          Pending: {teamResponseStatus.filter(m => m.response === 'not_declared').length}
+                        </div>
+                        <div style={{ fontWeight: 600 }}>
+                          Declined: {teamResponseStatus.filter(m => m.response === 'decline').length}
+                        </div>
+                      </div>
+                    )}
+                    {/* Existing group/lobby logic */}
+                    {(!tournament.lobby_urls || tournament.lobby_urls.length === 0) ? (
+                      <span>No lobbies assigned.</span>
+                    ) : (
+                      <div style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 32 }}>
+                        {tournament.lobby_urls.map((url, lobbyIdx) => {
+                          const startIdx = lobbyIdx * tournament.teams_per_lobby;
+                          const endIdx = startIdx + tournament.teams_per_lobby;
+                          const teamsInLobby = registeredTeams.slice(startIdx, endIdx);
+                          // Only show the lobby_url if the user's team is in this lobby and all have accepted
+                          let showLobbyUrl = false;
+                          if (userTeamId && teamsInLobby.some(t => t.id === userTeamId) && teamResponseStatus && teamResponseStatus.length > 0) {
+                            showLobbyUrl = teamResponseStatus.every(m => m.response === 'accept');
+                          }
+                          return (
+                            <div key={lobbyIdx} style={{
+                              background: '#181d24',
+                              borderRadius: 10,
+                              padding: 18,
+                              minWidth: 220,
+                              maxWidth: 260,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              boxShadow: `0 2px 8px ${blue}22`,
+                              border: `2px solid ${blue}`,
+                            }}>
+                              <div style={{ fontWeight: 700, color: blue, fontSize: 17, marginBottom: 6 }}>Lobby {lobbyIdx + 1}</div>
+                              {showLobbyUrl ? (
+                                <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: blue, fontWeight: 600, fontSize: 14, marginBottom: 10, wordBreak: 'break-all', textDecoration: 'underline' }}>{url}</a>
+                              ) : (
+                                <div style={{ color: '#888', fontWeight: 600, fontSize: 14, marginBottom: 10 }}>Lobby URL will be visible after all your team members confirm.</div>
+                              )}
+                              <div style={{ width: '100%', marginTop: 8 }}>
+                                {teamsInLobby.length === 0 && <div style={{ color: '#888', textAlign: 'center' }}>No teams assigned.</div>}
+                                {Array.from({ length: tournament.teams_per_lobby }).map((_, i) => {
+                                  const team = teamsInLobby[i];
+                                  // For user's own team, show status
+                                  let statusLabel = '';
+                                  if (team && userTeamId === team.id && teamResponseStatus && teamResponseStatus.length > 0) {
+                                    const allAccepted = teamResponseStatus.every(m => m.response === 'accept');
+                                    statusLabel = allAccepted ? 'Confirmed' : 'Yet to confirm';
+                                  }
+                                  return team ? (
+                                    <div key={team.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, background: '#222', borderRadius: 6, padding: '6px 10px' }}>
+                                      {team.team_logo_url && <img src={team.team_logo_url} alt={team.team_name} style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover', background: '#111' }} />}
+                                      <span style={{ color: blue, fontWeight: 600, fontSize: 15 }}>{team.team_name}</span>
+                                      {statusLabel && <span style={{ marginLeft: 8, color: statusLabel === 'Confirmed' ? 'limegreen' : '#ffb300', fontWeight: 700, fontSize: 13 }}>{statusLabel}</span>}
+                                    </div>
+                                  ) : (
+                                    <div key={i} style={{ color: '#888', background: '#222', borderRadius: 6, padding: '6px 10px', marginBottom: 8, textAlign: 'center' }}>TBD</div>
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )
+                          );
+                        })}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
