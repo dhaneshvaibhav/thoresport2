@@ -141,6 +141,7 @@ const logoStyle = {
 const titleStyle = {
   color: '#0DCAF0',
   marginBottom: '2rem',
+  fontFamily: "'Orbitron', sans-serif",
 };
 
 const inputStyle = {
@@ -149,9 +150,12 @@ const inputStyle = {
   padding: '0.75rem',
   marginBottom: '1rem',
   borderRadius: '6px',
-  border: '1px solid #ccc',
   fontSize: '1rem',
   outline: 'none',
+  backgroundColor: '#111111',
+  border: '1px solid #0DCAF0',
+  fontFamily: "'Orbitron', sans-serif",
+  color: '#0DCAF0',
 };
 
 const buttonStyle = {
@@ -165,6 +169,7 @@ const buttonStyle = {
   fontSize: '1rem',
   cursor: 'pointer',
   marginBottom: '1rem',
+  fontFamily: "'Orbitron', sans-serif",
 };
 
 const messageStyle = {

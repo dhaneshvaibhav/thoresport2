@@ -254,11 +254,12 @@ const inputStyle = {
   padding: '0.8rem',
   fontSize: '1rem',
   backgroundColor: '#111111',
-  color: '#ffffff',
+  color: '#0DCAF0',
   border: '1px solid #0DCAF0',
   borderRadius: '8px',
   outline: 'none',
   fontFamily: "'Orbitron', sans-serif",
+  
 };
 
 const buttonStyle = {
