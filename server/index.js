@@ -52,7 +52,8 @@ app.post('/send-announcement-email', async (req, res) => {
   }
 });
 
-
+// In-memory storage for demo (replace with DB in production)
+const tournamentVotes = {}; // { requestId: { teamId, tournamentId, responses: { email: 'accept'|'decline' } } }
 
 
 // Tournament invite endpoint
@@ -62,38 +63,14 @@ app.post('/tournament-invite', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  // Check if registration exists and is pending
-  const { data: reg, error: regError } = await supabase
-    .from('tournament_registrations')
-    .select('id, status')
-    .eq('id', registrationId)
-    .maybeSingle();
-  if (regError) {
-    return res.status(500).json({ error: 'Error checking registration.' });
-  }
-  if (!reg) {
-    return res.status(404).json({ error: 'Registration not found.' });
-  }
-  if (reg.status !== 'pending') {
-    return res.status(400).json({ error: 'Registration is not pending.' });
-  }
+  // Generate a unique request ID (for in-memory, but you should use registrationId for DB)
+  const requestId = registrationId; // Use registrationId as the requestId for consistency
+  tournamentVotes[requestId] = { teamId, tournamentId, teamEmails, responses: {} };
 
-  // For each member, insert a row with response 'not_declared' if not already present, and send invite email
+  // Send email to each member with unique accept/decline links
   for (const email of teamEmails) {
-    // Upsert with response 'not_declared' (only if not already present)
-    await supabase
-      .from('tournament_join_responses')
-      .upsert([
-        {
-          registration_id: registrationId,
-          member_email: email,
-          response: 'not_declared',
-          responded_at: new Date().toISOString(),
-        }
-      ], { onConflict: ['registration_id', 'member_email'] });
-
-    const acceptLink = `http://localhost:4000/tournament-response?requestId=${registrationId}&email=${encodeURIComponent(email)}&response=accept`;
-    const declineLink = `http://localhost:4000/tournament-response?requestId=${registrationId}&email=${encodeURIComponent(email)}&response=decline`;
+    const acceptLink = http://localhost:4000/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=accept;
+    const declineLink = http://localhost:4000/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=decline;
     const html = `
       <p>You are invited to join tournament: <b>${tournamentName}</b></p>
       <p>
@@ -101,10 +78,10 @@ app.post('/tournament-invite', async (req, res) => {
         <a href="${declineLink}">Decline</a>
       </p>
     `;
-    await sendMail({ to: email, subject: `Tournament Invitation: ${tournamentName}`, html });
+    await sendMail({ to: email, subject: Tournament Invitation: ${tournamentName}, html });
   }
 
-  res.json({ success: true, requestId: registrationId });
+  res.json({ success: true, requestId });
 });
 
 // Tournament response endpoint
@@ -113,8 +90,13 @@ app.get('/tournament-response', async (req, res) => {
   if (!requestId || !email || !response) {
     return res.status(400).send('Invalid response link.');
   }
+  if (!tournamentVotes[requestId]) {
+    return res.status(404).send('Request not found.');
+  }
 
-  // Update the member's response
+  tournamentVotes[requestId].responses[email] = response;
+
+  // When a member responds:
   await supabase
     .from('tournament_join_responses')
     .upsert([
@@ -126,69 +108,45 @@ app.get('/tournament-response', async (req, res) => {
       }
     ], { onConflict: ['registration_id', 'member_email'] });
 
-  // Get the registration to find the team_id
-  const { data: reg, error: regError } = await supabase
-    .from('tournament_registrations')
-    .select('team_id')
-    .eq('id', requestId)
-    .maybeSingle();
-  if (regError || !reg) {
-    return res.status(404).send('Registration not found.');
-  }
+  // Check if all members responded
+  const total = Object.keys(tournamentVotes[requestId].responses).length;
+  const teamSize = Object.keys(tournamentVotes[requestId].responses).length; // For demo, use responses length
+  // In production, use teamEmails.length
 
-  // Get all active team members for this team
-  const { data: members, error: membersError } = await supabase
-    .from('team_members')
-    .select('profiles ( email )')
-    .eq('team_id', reg.team_id)
-    .eq('status', 'active');
-  if (membersError) {
-    return res.status(500).send('Error fetching team members.');
-  }
-  const memberEmails = (members || []).map(m => m.profiles?.email).filter(Boolean);
-  if (memberEmails.length === 0) {
-    return res.status(400).send('No team members found.');
-  }
-
-  // Get all responses for this registration
-  const { data: responses, error: respError } = await supabase
+  // Count votes
+  const { data: responses } = await supabase
     .from('tournament_join_responses')
-    .select('member_email, response')
+    .select('response')
     .eq('registration_id', requestId);
-  if (respError) {
-    return res.status(500).send('Error fetching responses.');
-  }
 
-  // Check if all members have responded (none are 'not_declared')
-  const responsesMap = {};
-  for (const r of responses) {
-    responsesMap[r.member_email] = r.response;
-  }
-  const allResponded = memberEmails.every(email => responsesMap[email] && responsesMap[email] !== 'not_declared');
-  const allAccepted = memberEmails.every(email => responsesMap[email] === 'accept');
-  const anyDeclined = memberEmails.some(email => responsesMap[email] === 'decline');
+  const accepts = responses.filter(r => r.response === 'accept').length;
+  const declines = responses.filter(r => r.response === 'decline').length;
 
-  if (allResponded) {
-    if (allAccepted) {
+  // For demo, decide when all responded
+  if (total === tournamentVotes[requestId].teamEmails.length) {
+    if (accepts === tournamentVotes[requestId].teamEmails.length) {
       // All accepted: update registration status in DB
       await supabase
         .from('tournament_registrations')
         .update({ status: 'registered' })
         .eq('id', requestId);
-      return res.send('All members accepted. Team joined the tournament!');
-    } else if (anyDeclined) {
+
+      res.send('All members accepted. Team joined the tournament!');
+    } else {
       // At least one declined: update registration status in DB
       await supabase
         .from('tournament_registrations')
         .update({ status: 'declined' })
         .eq('id', requestId);
-      return res.send('One or more members declined. Team will not join the tournament.');
+
+      res.send('One or more members declined. Team will not join the tournament.');
     }
+  } else {
+    res.send('Your response has been recorded. Waiting for other members.');
   }
-  return res.send('Your response has been recorded. Waiting for other members.');
 });
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log('Server running on port ${PORT});
 });

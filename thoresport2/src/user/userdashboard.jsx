@@ -150,181 +150,11 @@ function UserDashboard() {
           0% { transform: translateY(0); }
           100% { transform: translateY(-60vh); }
         }
-
-        @media (max-width: 600px) {
-          .ts-team-section {
-            padding: 1.2rem 0.5rem !important;
-            max-width: 100vw !important;
-            margin: 0 !important;
-          }
-          .ts-create-team-section {
-            padding: 1.2rem 0.5rem !important;
-            margin-bottom: 1.5rem !important;
-            border-radius: 10px !important;
-            width: 98vw !important;
-            min-width: 0 !important;
-            max-width: 100vw !important;
-          }
-          .ts-create-team-btn {
-            font-size: 1rem !important;
-            padding: 0.7rem 1.2rem !important;
-            margin-bottom: 1.2rem !important;
-          }
-          .ts-my-teams-box {
-            padding: 1rem !important;
-            border-radius: 8px !important;
-            margin-top: 10px !important;
-          }
-          .ts-my-teams-box h3 {
-            font-size: 1.1rem !important;
-            margin-bottom: 8px !important;
-          }
-          .ts-my-teams-box b {
-            font-size: 1rem !important;
-            max-width: 90vw !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
-            display: inline-block !important;
-          }
-          .ts-my-teams-box ul {
-            font-size: 0.95rem !important;
-          }
-          .ts-my-teams-box img {
-            width: 28px !important;
-            height: 28px !important;
-          }
-          .ts-my-teams-box button {
-            font-size: 0.95rem !important;
-            padding: 6px 10px !important;
-            margin-left: 8px !important;
-          }
-          .ts-team-invites {
-            padding: 10px !important;
-            font-size: 0.95rem !important;
-            border-radius: 8px !important;
-          }
-          .ts-team-invites h3 {
-            font-size: 1rem !important;
-          }
-          .ts-team-invites button {
-            font-size: 0.95rem !important;
-            padding: 6px 10px !important;
-            margin-left: 6px !important;
-          }
-          .ts-hero-content {
-            flex-direction: column !important;
-            gap: 1.2rem !important;
-            min-height: 0 !important;
-            padding: 0 !important;
-          }
-          .ts-video-section {
-            min-width: 0 !important;
-            min-height: 100px !important;
-            height: 140px !important;
-            width: 90vw !important;
-            max-width: 90vw !important;
-            border-radius: 8px !important;
-            margin: 0 auto 1.5rem auto !important;
-          }
-          .ts-video {
-            min-width: 0 !important;
-            min-height: 100px !important;
-            height: 140px !important;
-            width: 90vw !important;
-            max-width: 90vw !important;
-            border-radius: 8px !important;
-          }
-          .ts-tournament-list {
-            flex-direction: column !important;
-            gap: 1.2rem !important;
-            align-items: flex-start !important;
-            width: 100vw !important;
-            justify-content: flex-start !important;
-            padding-left: 2vw !important;
-            padding-right: 2vw !important;
-          }
-          .ts-tournament-card {
-            width: 92vw !important;
-            max-width: 340px !important;
-            min-height: 340px !important;
-            max-height: 340px !important;
-            height: 340px !important;
-            padding: 10px !important;
-            margin: 0 0 2rem 0 !important;
-            box-sizing: border-box !important;
-            border-radius: 10px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: flex-start !important;
-            overflow: hidden !important;
-            position: relative !important;
-            background: rgba(26,26,26,0.7) !important;
-          }
-          .ts-tournament-card h2 {
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
-            width: 100% !important;
-            margin: 0 0 0.3rem 0 !important;
-            font-size: 1.1rem !important;
-            font-family: Orbitron, sans-serif !important;
-          }
-          .ts-tournament-card p {
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
-            width: 100% !important;
-            margin: 0 0 0.3rem 0 !important;
-            font-size: 0.98rem !important;
-          }
-          .ts-tournament-card img {
-            width: 100% !important;
-            height: 90px !important;
-            object-fit: cover !important;
-            border-radius: 6px !important;
-            margin-bottom: 0.5rem !important;
-            flex-shrink: 0 !important;
-          }
-          .ts-tournament-card .tournamentButtonGroup {
-            margin-top: auto !important;
-            width: 100% !important;
-          }
-          .ts-tournament-card img {
-            width: 100% !important;
-            height: 90px !important;
-            object-fit: cover !important;
-            border-radius: 6px !important;
-            margin-bottom: 0.5rem !important;
-          }
-          .ts-tournament-card h2 {
-            font-size: 1.1rem !important;
-            word-break: break-word !important;
-            overflow-wrap: break-word !important;
-            white-space: normal !important;
-            text-overflow: ellipsis !important;
-            max-width: 100% !important;
-            overflow: hidden !important;
-          }
-          .ts-tournament-card p {
-            font-size: 0.98rem !important;
-            margin-bottom: 0.3rem !important;
-          }
-          .ts-tournament-list-wrapper {
-            width: 100vw !important;
-            display: flex !important;
-            justify-content: flex-start !important;
-            align-items: flex-start !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-          }
-        }
       `}</style>
     <div style={styles.dashboardBg}>
       {/* Video Hero Section */}
       <div style={styles.heroContainer}>
-        <div style={styles.heroContent} className="ts-hero-content">
+        <div style={styles.heroContent}>
           <div style={styles.descriptionSection}>
             <h1 style={styles.mainTitle}>THORESPORT</h1>
             <h2 style={styles.subtitle}>The Ultimate Gaming Tournament Platform</h2>
@@ -342,7 +172,7 @@ function UserDashboard() {
             </div>
           </div>
 
-          <div style={styles.videoSection} className="ts-video-section">
+          <div style={styles.videoSection}>
             <div
               style={{
                 ...styles.slideWrapper,
@@ -359,7 +189,6 @@ function UserDashboard() {
                   title={currentVideo.title}
                   frameBorder="0"
                   style={styles.video}
-                  className="ts-video"
                 />
               ) : (
                 <div
@@ -378,20 +207,20 @@ function UserDashboard() {
 
       <div style={styles.neonDivider} />
 { /* Teams and Tournaments Section */}
-     <div className="ts-team-section" style={{ padding: '5rem', maxWidth: 1200, margin: '0 auto' }}>
-  <div className="ts-create-team-section" style={styles.createTeamSection}>
+     <div style={{ padding: '5rem', maxWidth: 1200, margin: '0 auto' }}>
+  <div style={styles.createTeamSection}>
     <h2 style={styles.sectionHeading}>
       <span style={styles.sectionIcon}>👥</span> My Teams & Invitations
     </h2>
 
     {myTeams.length === 0 && (
-      <button className="ts-create-team-btn" style={styles.createTeamButton} onClick={() => setShowCreateTeam(true)}>
+      <button style={styles.createTeamButton} onClick={() => setShowCreateTeam(true)}>
         Create Team
       </button>
     )}
 
     {pendingInvites.length > 0 && (
-      <div className="ts-team-invites" style={{ marginBottom: 24, padding: 16, background: '#1a1a1a', borderRadius: 8 }}>
+      <div style={{ marginBottom: 24, padding: 16, background: '#1a1a1a', borderRadius: 8 }}>
         <h3 style={{ textAlign: 'center' }}>Team Invitations</h3>
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
           {pendingInvites.map(inv => (
@@ -406,7 +235,7 @@ function UserDashboard() {
     )}
 
     {myTeams.length > 0 && (
-      <div className="ts-my-teams-box" style={styles.myTeamsBox}>
+      <div style={styles.myTeamsBox}>
         <h3 style={{ textAlign: 'center', fontFamily: 'Orbitron', color: 'lightblue', marginBottom: "12px"}}>My Teams</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {myTeams.map(team => (
@@ -483,10 +312,10 @@ function UserDashboard() {
           {loading && <p>Loading tournaments...</p>}
           {error && <p style={{ color: 'red' }}>{error}</p>}
 
-          <div style={styles.tournamentListWrapper} className="ts-tournament-list-wrapper">
-            <div style={styles.tournamentList} className="ts-tournament-list">
+          <div style={styles.tournamentListWrapper}>
+            <div style={styles.tournamentList}>
               {tournaments.map(t => (
-                <div key={t.id} style={styles.tournamentCard} className="ts-tournament-card">
+                <div key={t.id} style={styles.tournamentCard}>
                   {t.logo_url && <img src={t.logo_url} alt={t.name} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 4 }} />}
                   <h2 style={{ color: '#01E2E9', fontFamily: 'Orbitron' }}>{t.name}</h2>
                   <p><b>Prize Pool:</b> {t.prize_pool}</p>
@@ -546,14 +375,10 @@ function UserDashboard() {
 const styles = { 
   dashboardBg: {
     minHeight: '100vh',
-    width: '100vw',
     background: 'linear-gradient(135deg, #000 60%, #011f2a 100%)',
     animation: 'bgMove 10s linear infinite',
     color: '#fff',
     fontFamily: 'Orbitron, sans-serif',
-    padding: '4rem 0',
-    boxSizing: 'border-box',
-    overflowX: 'hidden',
   },
   '@keyframes bgMove': {
     '50%': { backgroundPosition: '100% 50%' },
@@ -562,14 +387,15 @@ const styles = {
   heroContainer: {
     width: '100%',
     maxWidth: '100%',
-    margin: '0 auto 5rem',
-    padding: '0 1rem',
+    margin: '0 auto 3rem',
+    padding: '0 2rem',
   },
   heroContent: {
     display: 'flex',
-    gap: '3rem',
+    gap: '5rem',
     alignItems: 'center',
-    minHeight: '350px',
+    minHeight: '500px',
+    
   },
   descriptionSection: {
     flex: '0.8',
@@ -584,38 +410,38 @@ const styles = {
     justifyContent: 'center',
   },
   mainTitle: {
-    fontSize: '2.2rem',
-    marginBottom: '0.8rem',
+    fontSize: '3.2rem',
+    marginBottom: '1.2rem',
     color: '#01E2E9',
     fontFamily: 'Orbitron, sans-serif',
     fontWeight: 'bold',
-    textShadow: '0 0 18px #01E2E9',
+    textShadow: '0 0 24px #01E2E9',
   },
   subtitle: {
-    fontSize: '1.1rem',
-    marginBottom: '1.1rem',
+    fontSize: '1.7rem',
+    marginBottom: '1.7rem',
     color: '#BABC19',
     fontFamily: 'Orbitron, sans-serif',
   },
   description: {
-    marginBottom: '1.2rem',
-    fontSize: '0.95rem',
-    lineHeight: '1.5',
+    marginBottom: '2.2rem',
+    fontSize: '1.15rem',
+    lineHeight: '1.7',
     color: '#fff',
   },
   features: {
-    marginBottom: '1.2rem',
+    marginBottom: '2.2rem',
   },
   feature: {
     display: 'flex',
     alignItems: 'center',
-    marginBottom: '0.7rem',
-    fontSize: '0.95rem',
+    marginBottom: '1.1rem',
+    fontSize: '1.1rem',
     color: '#fff',
   },
   featureIcon: {
-    marginRight: '0.7rem',
-    fontSize: '1.2rem',
+    marginRight: '1.1rem',
+    fontSize: '1.6rem',
   },
   ctaButton: {
     padding: '1rem 2rem',
@@ -645,10 +471,6 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     transition: 'box-shadow 0.3s',
-    minWidth: 220,
-    minHeight: 120,
-    width: '80%',
-    maxWidth: 420,
   },
   slideWrapper: {
     width: '100%',
@@ -657,12 +479,7 @@ const styles = {
   video: {
     width: '100%',
     height: '100%',
-    minWidth: 220,
-    minHeight: 120,
-    aspectRatio: '16 / 9',
     border: 'none',
-    display: 'block',
-    objectFit: 'cover',
   },
   thumbnail: {
     width: '100%',
@@ -784,8 +601,6 @@ const styles = {
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
-    marginLeft: 'auto',
-    marginRight: 'auto',
   },
   tournamentList: {
     display: 'flex',
@@ -799,23 +614,15 @@ const styles = {
   tournamentCard: {
     border: '1.5px solid #01E2E9',
     borderRadius: 14,
-    padding: 12,
-    width: 240,
-    minWidth: 220,
-    maxWidth: 340,
-    minHeight: 400,
-    maxHeight: 400,
-    height: 400,
+    padding: 20,
+    width: 300,
     background: 'rgba(26,26,26,0.7)',
     boxShadow: '0 0 18px #01E2E955',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'flex-start',
     transition: 'transform 0.2s, box-shadow 0.2s',
     backdropFilter: 'blur(6px)',
-    overflow: 'hidden',
-    position: 'relative',
   },
   tournamentButtonGroup: {
     width: '100%',
@@ -826,13 +633,13 @@ const styles = {
   },
   tournamentButton: {
     width: '100%',
-    padding: '7px 0',
+    padding: '12px 0',
     background: 'linear-gradient(90deg, #01E2E9 60%, #1976d2 100%)',
     color: '#fff',
     border: 'none',
     borderRadius: 6,
     fontWeight: 'bold',
-    fontSize: '0.85rem',
+    fontSize: '1rem',
     cursor: 'pointer',
     transition: 'background 0.2s, transform 0.2s, box-shadow 0.2s',
     boxShadow: '0 0 8px #01E2E955',

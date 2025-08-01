@@ -172,7 +172,7 @@ function TournamentDetails() {
      
     }}>
       {showRegisterModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#000a', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#000a', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
           <RegisterTeamModal tournamentId={tournament.id} onClose={() => setShowRegisterModal(false)} />
         </div>
       )}
@@ -230,16 +230,22 @@ function TournamentDetails() {
                 borderRadius: 6,
                 padding: '2px 12px',
                 fontSize: 16,
-                letterSpacing: 1
+                letterSpacing: 1,
+                fontFamily: "'Orbitron', sans-serif"
               }}>{tournament.game}</span>
             </div>
             <h1 style={{
               fontSize: 32,
-              fontWeight: 900,
+              fontWeight: 800,
               marginBottom: 12,
               color: blue,
+              fontFamily: "'Orbitron', sans-serif",
+              letterSpacing: 1,
               textTransform: 'uppercase',
-              letterSpacing: 1
+              background: 'none',
+              border: 'none',
+              outline: 'none',
+              padding: 0,
             }}>{tournament.name}</h1>
 
             <div style={{
@@ -255,23 +261,24 @@ function TournamentDetails() {
               flexDirection: 'column',
               gap: 12
             }}>
-              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Organized By:</span> {tournament.organization_id || 'N/A'}</div>
-              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Game:</span> {tournament.game || 'N/A'}</div>
-              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Mode:</span> {tournament.mode || 'N/A'}</div>
-              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Prize Pool:</span> <span style={{
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif"}}>Organized By:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{tournament.organization_id || 'N/A'}</span></div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>Game:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{tournament.game || 'N/A'}</span></div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>Mode:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{tournament.mode || 'N/A'}</span></div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>Prize Pool:</span> <span style={{
                 color: '#000000',
                 background: blue,
                 borderRadius: 6,
                 padding: '2px 12px',
                 fontWeight: 900,
                 fontSize: 22,
-                marginLeft: 6
+                marginLeft: 6,
+                fontFamily: "'Orbitron', sans-serif"
               }}>{tournament.prize_pool || 'N/A'}</span></div>
-              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Start Date:</span> {tournament.start_date ? new Date(tournament.start_date).toLocaleDateString() : 'N/A'}</div>
-              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>End Date:</span> {tournament.end_date ? new Date(tournament.end_date).toLocaleDateString() : 'N/A'}</div>
-              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>No. of Lobbies:</span> {tournament.num_lobbies || 'N/A'}</div>
-              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Teams per Lobby:</span> {tournament.teams_per_lobby || 'N/A'}</div>
-              <div><span style={{ color: '#0DCAF0', fontWeight: 700 }}>Created At:</span> {tournament.created_at ? new Date(tournament.created_at).toLocaleString() : 'N/A'}</div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>Start Date:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{tournament.start_date ? new Date(tournament.start_date).toLocaleDateString() : 'N/A'}</span></div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>End Date:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{tournament.end_date ? new Date(tournament.end_date).toLocaleDateString() : 'N/A'}</span></div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>No. of Lobbies:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{tournament.num_lobbies || 'N/A'}</span></div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>Teams per Lobby:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{tournament.teams_per_lobby || 'N/A'}</span></div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>Created At:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{tournament.created_at ? new Date(tournament.created_at).toLocaleString() : 'N/A'}</span></div>
             </div>
 
             <button style={{
@@ -285,7 +292,8 @@ function TournamentDetails() {
               cursor: 'pointer',
               marginTop: 8,
               boxShadow: `0 2px 8px ${blue}55`,
-              letterSpacing: 1
+              letterSpacing: 1,
+              fontFamily: "'Orbitron', sans-serif",
             }}
             onClick={() => setShowRegisterModal(true)}
             >
@@ -334,7 +342,7 @@ function TournamentDetails() {
               >
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                   {tab.icon}
-                  {!isMobile && <span>{tab.label}</span>}
+                  {!isMobile && <span style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', fontSize: 15 }}>{tab.label}</span>}
                 </div>
               </button>
             ))}
@@ -346,16 +354,18 @@ function TournamentDetails() {
                 color: '#fff',
                 fontSize: 16,
                 maxHeight: '300px',
-                overflowY: 'auto'
+                overflowY: 'auto',
+                fontFamily: "'Orbitron', sans-serif"
               }}>
-                <b style={{ color: blue }}>Announcements:</b><br />
+                <b style={{ color: blue, fontFamily: "'Orbitron', sans-serif", fontSize: 20, letterSpacing: 1, textTransform: 'uppercase' }}>Announcements:</b><br />
                 {announcements.length === 0 ? (
-                  <span>No announcements yet.</span>
+                  <span style={{ fontFamily: "'Orbitron', sans-serif" }}>No announcements yet.</span>
                 ) : (
                   <ul style={{
                     marginTop: 12,
                     paddingLeft: 0,
-                    listStyle: 'none'
+                    listStyle: 'none',
+                    fontFamily: "'Orbitron', sans-serif"
                   }}>
                     {announcements.map(a => (
                       <li key={a.id} style={{
@@ -363,17 +373,19 @@ function TournamentDetails() {
                         borderRadius: 8,
                         marginBottom: 12,
                         padding: 12,
-                        boxShadow: `0 2px 8px ${blue}11`
+                        boxShadow: `0 2px 8px ${blue}11`,
+                        fontFamily: "'Orbitron', sans-serif"
                       }}>
                         <div style={{
                           color: blue,
                           fontWeight: 700,
                           fontSize: 14,
-                          marginBottom: 4
+                          marginBottom: 4,
+                          fontFamily: "'Orbitron', sans-serif"
                         }}>
                           {new Date(a.created_at).toLocaleString()}
                         </div>
-                        <div style={{ fontSize: 15 }}>{a.content}</div>
+                        <div style={{ fontSize: 15, fontFamily: "'Orbitron', sans-serif" }}>{a.content}</div>
                       </li>
                     ))}
                   </ul>
@@ -382,33 +394,33 @@ function TournamentDetails() {
             )}
 
             {activeTab === 'rules' && (
-              <div style={{ color: '#fff', fontSize: 16 }}>
-                <b style={{ color: blue }}>Rules:</b><br />
+              <div style={{ color: '#fff', fontSize: 16, fontFamily: "'Orbitron', sans-serif" }}>
+                <b style={{ color: blue, fontFamily: "'Orbitron', sans-serif", fontSize: 20, letterSpacing: 1, textTransform: 'uppercase' }}>Rules:</b><br />
                 {tournament.rules && tournament.rules.trim() !== '' ? (
-                  <span style={{ whiteSpace: 'pre-line' }}>{tournament.rules}</span>
+                  <span style={{ whiteSpace: 'pre-line', fontFamily: "'Orbitron', sans-serif" }}>{tournament.rules}</span>
                 ) : (
-                  <span>No rules provided yet.</span>
+                  <span style={{ fontFamily: "'Orbitron', sans-serif" }}>No rules provided yet.</span>
                 )}
               </div>
             )}
 
             {activeTab === 'points' && (
-              <div style={{ color: '#fff', fontSize: 16 }}>
-                <b style={{ color: blue }}>Points System:</b><br />
+              <div style={{ color: '#fff', fontSize: 16, fontFamily: "'Orbitron', sans-serif" }}>
+                <b style={{ color: blue, fontFamily: "'Orbitron', sans-serif", fontSize: 20, letterSpacing: 1, textTransform: 'uppercase' }}>Points System:</b><br />
                 {tournament.points_system && tournament.points_system.trim() !== '' ? (
-                  <span style={{ whiteSpace: 'pre-line' }}>{tournament.points_system}</span>
+                  <span style={{ whiteSpace: 'pre-line', fontFamily: "'Orbitron', sans-serif" }}>{tournament.points_system}</span>
                 ) : (
-                  <span>No points system provided yet.</span>
+                  <span style={{ fontFamily: "'Orbitron', sans-serif" }}>No points system provided yet.</span>
                 )}
               </div>
             )}
             {activeTab === 'teams' && (
-              <div style={{ color: '#fff', fontSize: 16 }}>
-                <b style={{ color: blue }}>Teams:</b><br />
+              <div style={{ color: '#fff', fontSize: 16, fontFamily: "'Orbitron', sans-serif" }}>
+                <b style={{ color: blue, fontFamily: "'Orbitron', sans-serif", fontSize: 20, letterSpacing: 1, textTransform: 'uppercase' }}>Teams:</b><br />
                 {registeredTeams.length === 0 ? (
-                  <span>No teams registered yet.</span>
+                  <span style={{ fontFamily: "'Orbitron', sans-serif" }}>No teams registered yet.</span>
                 ) : (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginTop: 16 }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginTop: 16, fontFamily: "'Orbitron', sans-serif" }}>
                     {registeredTeams.map(team => {
                       // For each team, fetch their members' responses
                       // We'll show 'Confirmed' if all accepted, else 'Yet to confirm'
@@ -428,13 +440,14 @@ function TournamentDetails() {
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
-                          boxShadow: `0 2px 8px ${blue}22`
+                          boxShadow: `0 2px 8px ${blue}22`,
+                          fontFamily: "'Orbitron', sans-serif"
                         }}>
                           {team.team_logo_url && (
                             <img src={team.team_logo_url} alt={team.team_name} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, marginBottom: 8, background: '#222' }} />
                           )}
-                          <span style={{ fontWeight: 700, color: blue, fontSize: 18, textAlign: 'center' }}>{team.team_name}</span>
-                          <span style={{ marginTop: 6, color: statusLabel === 'Confirmed' ? 'limegreen' : '#ffb300', fontWeight: 700, fontSize: 14 }}>{statusLabel}</span>
+                          <span style={{ fontWeight: 700, color: blue, fontSize: 18, textAlign: 'center', fontFamily: "'Orbitron', sans-serif" }}>{team.team_name}</span>
+                          <span style={{ marginTop: 6, color: statusLabel === 'Confirmed' ? 'limegreen' : '#ffb300', fontWeight: 700, fontSize: 14, fontFamily: "'Orbitron', sans-serif" }}>{statusLabel}</span>
                         </div>
                       );
                     })}
@@ -443,10 +456,10 @@ function TournamentDetails() {
               </div>
             )}
             {activeTab === 'groups' && (
-              <div style={{ color: '#fff', fontSize: 16 }}>
-                <b style={{ color: blue }}>Groups:</b><br />
+              <div style={{ color: '#fff', fontSize: 16, fontFamily: "'Orbitron', sans-serif" }}>
+                <b style={{ color: blue, fontFamily: "'Orbitron', sans-serif", fontSize: 20, letterSpacing: 1, textTransform: 'uppercase' }}>Groups:</b><br />
                 {!userRegistered ? (
-                  <div style={{ color: blue, marginTop: 24, textAlign: 'center', fontWeight: 700, fontSize: 18 }}>
+                  <div style={{ color: blue, marginTop: 24, textAlign: 'center', fontWeight: 700, fontSize: 18, fontFamily: "'Orbitron', sans-serif" }}>
                     Groups unlock only when you are registered.
                   </div>
                 ) : (
@@ -463,34 +476,35 @@ function TournamentDetails() {
                         fontSize: 15,
                         maxWidth: 400,
                         margin: '0 auto 24px auto',
+                        fontFamily: "'Orbitron', sans-serif"
                       }}>
-                        <div style={{ fontWeight: 700, color: blue, fontSize: 17, marginBottom: 8 }}>Your Team Confirmation Status</div>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                        <div style={{ fontWeight: 700, color: blue, fontSize: 18, marginBottom: 8, fontFamily: "'Orbitron', sans-serif", letterSpacing: 1, textTransform: 'uppercase' }}>Your Team Confirmation Status</div>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontFamily: "'Orbitron', sans-serif" }}>
                           {teamResponseStatus.map(member => (
-                            <li key={member.email} style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <span style={{ fontWeight: 600 }}>{member.username || member.email}</span>
-                              {member.response === 'accept' && <span style={{ color: 'limegreen', fontWeight: 700 }}>&#10003; Accepted</span>}
-                              {member.response === 'decline' && <span style={{ color: '#ff0033', fontWeight: 700 }}>&#10007; Declined</span>}
-                              {member.response === 'not_declared' && <span style={{ color: '#ffb300', fontWeight: 700 }}>Pending</span>}
+                            <li key={member.email} style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8, fontFamily: "'Orbitron', sans-serif" }}>
+                              <span style={{ fontWeight: 600, fontFamily: "'Orbitron', sans-serif" }}>{member.username || member.email}</span>
+                              {member.response === 'accept' && <span style={{ color: 'limegreen', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>&#10003; Accepted</span>}
+                              {member.response === 'decline' && <span style={{ color: '#ff0033', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>&#10007; Declined</span>}
+                              {member.response === 'not_declared' && <span style={{ color: '#ffb300', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>Pending</span>}
                             </li>
                           ))}
                         </ul>
-                        <div style={{ marginTop: 10, fontWeight: 600 }}>
+                        <div style={{ marginTop: 10, fontWeight: 600, fontFamily: "'Orbitron', sans-serif" }}>
                           Accepted: {teamResponseStatus.filter(m => m.response === 'accept').length} / {teamResponseStatus.length}
                         </div>
-                        <div style={{ fontWeight: 600 }}>
+                        <div style={{ fontWeight: 600, fontFamily: "'Orbitron', sans-serif" }}>
                           Pending: {teamResponseStatus.filter(m => m.response === 'not_declared').length}
                         </div>
-                        <div style={{ fontWeight: 600 }}>
+                        <div style={{ fontWeight: 600, fontFamily: "'Orbitron', sans-serif" }}>
                           Declined: {teamResponseStatus.filter(m => m.response === 'decline').length}
                         </div>
                       </div>
                     )}
                     {/* Existing group/lobby logic */}
                     {(!tournament.lobby_urls || tournament.lobby_urls.length === 0) ? (
-                      <span>No lobbies assigned.</span>
+                      <span style={{ fontFamily: "'Orbitron', sans-serif" }}>No lobbies assigned.</span>
                     ) : (
-                      <div style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 32 }}>
+                      <div style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 32, fontFamily: "'Orbitron', sans-serif" }}>
                         {tournament.lobby_urls.map((url, lobbyIdx) => {
                           const startIdx = lobbyIdx * tournament.teams_per_lobby;
                           const endIdx = startIdx + tournament.teams_per_lobby;
@@ -512,15 +526,16 @@ function TournamentDetails() {
                               alignItems: 'center',
                               boxShadow: `0 2px 8px ${blue}22`,
                               border: `2px solid ${blue}`,
+                              fontFamily: "'Orbitron', sans-serif"
                             }}>
-                              <div style={{ fontWeight: 700, color: blue, fontSize: 17, marginBottom: 6 }}>Lobby {lobbyIdx + 1}</div>
+                              <div style={{ fontWeight: 700, color: blue, fontSize: 18, marginBottom: 6, fontFamily: "'Orbitron', sans-serif", letterSpacing: 1, textTransform: 'uppercase' }}>Lobby {lobbyIdx + 1}</div>
                               {showLobbyUrl ? (
-                                <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: blue, fontWeight: 600, fontSize: 14, marginBottom: 10, wordBreak: 'break-all', textDecoration: 'underline' }}>{url}</a>
+                                <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: blue, fontWeight: 600, fontSize: 14, marginBottom: 10, wordBreak: 'break-all', textDecoration: 'underline', fontFamily: "'Orbitron', sans-serif" }}>{url}</a>
                               ) : (
-                                <div style={{ color: '#888', fontWeight: 600, fontSize: 14, marginBottom: 10 }}>Lobby URL will be visible after all your team members confirm.</div>
+                                <div style={{ color: '#888', fontWeight: 600, fontSize: 14, marginBottom: 10, fontFamily: "'Orbitron', sans-serif" }}>Lobby URL will be visible after all your team members confirm.</div>
                               )}
-                              <div style={{ width: '100%', marginTop: 8 }}>
-                                {teamsInLobby.length === 0 && <div style={{ color: '#888', textAlign: 'center' }}>No teams assigned.</div>}
+                              <div style={{ width: '100%', marginTop: 8, fontFamily: "'Orbitron', sans-serif" }}>
+                                {teamsInLobby.length === 0 && <div style={{ color: '#888', textAlign: 'center', fontFamily: "'Orbitron', sans-serif" }}>No teams assigned.</div>}
                                 {Array.from({ length: tournament.teams_per_lobby }).map((_, i) => {
                                   const team = teamsInLobby[i];
                                   // For user's own team, show status
@@ -530,13 +545,13 @@ function TournamentDetails() {
                                     statusLabel = allAccepted ? 'Confirmed' : 'Yet to confirm';
                                   }
                                   return team ? (
-                                    <div key={team.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, background: '#222', borderRadius: 6, padding: '6px 10px' }}>
+                                    <div key={team.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, background: '#222', borderRadius: 6, padding: '6px 10px', fontFamily: "'Orbitron', sans-serif" }}>
                                       {team.team_logo_url && <img src={team.team_logo_url} alt={team.team_name} style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover', background: '#111' }} />}
-                                      <span style={{ color: blue, fontWeight: 600, fontSize: 15 }}>{team.team_name}</span>
-                                      {statusLabel && <span style={{ marginLeft: 8, color: statusLabel === 'Confirmed' ? 'limegreen' : '#ffb300', fontWeight: 700, fontSize: 13 }}>{statusLabel}</span>}
+                                      <span style={{ color: blue, fontWeight: 600, fontSize: 15, fontFamily: "'Orbitron', sans-serif" }}>{team.team_name}</span>
+                                      {statusLabel && <span style={{ marginLeft: 8, color: statusLabel === 'Confirmed' ? 'limegreen' : '#ffb300', fontWeight: 700, fontSize: 13, fontFamily: "'Orbitron', sans-serif" }}>{statusLabel}</span>}
                                     </div>
                                   ) : (
-                                    <div key={i} style={{ color: '#888', background: '#222', borderRadius: 6, padding: '6px 10px', marginBottom: 8, textAlign: 'center' }}>TBD</div>
+                                    <div key={i} style={{ color: '#888', background: '#222', borderRadius: 6, padding: '6px 10px', marginBottom: 8, textAlign: 'center', fontFamily: "'Orbitron', sans-serif" }}>TBD</div>
                                   );
                                 })}
                               </div>

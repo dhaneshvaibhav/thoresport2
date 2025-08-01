@@ -47,16 +47,59 @@ function UserTournament() {
             <p style={{color:'white', fontFamily:"Orbitron"}}><b style={{ color: "#BABC19" }}>End:</b> {t.end_date}</p>
             <p style={{color:'white', fontFamily:"Orbitron"}}><b style={{ color: "#BABC19" }}>Game:</b> {t.game}</p>
             <p style={{color:'white', fontFamily:"Orbitron"}}><b style={{ color: "#BABC19" }}>Mode:</b> {t.mode}</p>
-            <button
-              onClick={() => {
-                setRegisterTournament(t);
-                setShowRegisterModal(true);
-              }}
-              style={{ marginTop: 8, padding: '8px 16px', background: '#4caf50', color: 'black', border: 'none', borderRadius: 4, cursor: 'pointer', marginRight: 8, fontFamily: "Orbitron" }}
-            >
-              Join
-            </button>
-            <button onClick={() => navigate(`/tournament/${t.id}`)} style={{ marginTop: 8, padding: '8px 16px', background: '#2196f3', color: 'black', border: 'none', borderRadius: 4, cursor: 'pointer',fontFamily:"Orbitron" }}>View More</button>
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.7rem', marginTop: 16 }}>
+              <button
+                onClick={() => {
+                  setRegisterTournament(t);
+                  setShowRegisterModal(true);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '12px 0',
+                  background: 'linear-gradient(90deg, #01E2E9 60%, #1976d2 100%)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s, transform 0.2s, box-shadow 0.2s',
+                  boxShadow: '0 0 8px #01E2E955',
+                  fontFamily: 'Orbitron, sans-serif',
+                  letterSpacing: 1,
+                  outline: 'none',
+                  marginBottom: 0,
+                }}
+                onMouseOver={e => e.currentTarget.style.background = 'linear-gradient(90deg, #01E2E9 80%, #BABC19 100%)'}
+                onMouseOut={e => e.currentTarget.style.background = 'linear-gradient(90deg, #01E2E9 60%, #1976d2 100%)'}
+              >
+                Join
+              </button>
+              <button
+                onClick={() => navigate(`/tournament/${t.id}`)}
+                style={{
+                  width: '100%',
+                  padding: '12px 0',
+                  background: 'linear-gradient(90deg, #01E2E9 60%, #1976d2 100%)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s, transform 0.2s, box-shadow 0.2s',
+                  boxShadow: '0 0 8px #01E2E955',
+                  fontFamily: 'Orbitron, sans-serif',
+                  letterSpacing: 1,
+                  outline: 'none',
+                  marginBottom: 0,
+                }}
+                onMouseOver={e => e.currentTarget.style.background = 'linear-gradient(90deg, #01E2E9 80%, #BABC19 100%)'}
+                onMouseOut={e => e.currentTarget.style.background = 'linear-gradient(90deg, #01E2E9 60%, #1976d2 100%)'}
+              >
+                View More
+              </button>
+            </div>
           </div>
         ))}
       </div>
