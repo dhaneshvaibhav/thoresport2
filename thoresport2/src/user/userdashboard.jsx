@@ -151,6 +151,23 @@ function UserDashboard() {
           100% { transform: translateY(-60vh); }
         }
 
+        @keyframes cardGlow {
+          0% {
+            box-shadow: 0 0 20px rgba(1, 226, 233, 0.3);
+          }
+          50% {
+            box-shadow: 0 0 30px rgba(1, 226, 233, 0.6);
+          }
+          100% {
+            box-shadow: 0 0 20px rgba(1, 226, 233, 0.3);
+          }
+        }
+
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+
         .edit-team-btn {
           background: linear-gradient(90deg, #BABC19 0%, #01E2E9 100%);
           color: #000;
@@ -193,6 +210,326 @@ function UserDashboard() {
 
         .edit-team-btn:hover::before {
           left: 100%;
+        }
+
+        /* Enhanced Tournament Card Styles */
+        .tournament-card-enhanced {
+          background: rgba(15, 15, 15, 0.95);
+          border: 2px solid #01E2E9;
+          border-radius: 16px;
+          padding: 0;
+          width: 100%;
+          max-width: 380px;
+          height: 520px;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.4s ease;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 8px 32px rgba(1, 226, 233, 0.2);
+        }
+
+        .tournament-card-enhanced:hover {
+          transform: translateY(-8px) scale(1.02);
+          border-color: #BABC19;
+          box-shadow: 0 15px 50px rgba(1, 226, 233, 0.4);
+          animation: cardGlow 2s infinite;
+        }
+
+        .tournament-card-enhanced::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(1, 226, 233, 0.1), transparent);
+          transition: left 0.6s;
+          z-index: 1;
+        }
+
+        .tournament-card-enhanced:hover::before {
+          left: 100%;
+        }
+
+        .tournament-image-container {
+          position: relative;
+          width: 100%;
+          height: 180px;
+          overflow: hidden;
+          border-radius: 14px 14px 0 0;
+          border-bottom: 2px solid #01E2E9;
+        }
+
+        .tournament-image-enhanced {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: all 0.4s ease;
+        }
+
+        .tournament-card-enhanced:hover .tournament-image-enhanced {
+          transform: scale(1.05);
+          filter: brightness(1.1) saturate(1.2);
+        }
+
+        .tournament-content {
+          padding: 20px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          z-index: 2;
+        }
+
+        .tournament-title-enhanced {
+          color: #01E2E9;
+          font-family: 'Orbitron', sans-serif;
+          font-size: 1.3rem;
+          font-weight: bold;
+          margin: 0 0 15px 0;
+          text-align: center;
+          text-shadow: 0 0 15px rgba(1, 226, 233, 0.8);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          min-height: 2.6rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .tournament-details {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-bottom: 20px;
+        }
+
+        .tournament-detail-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: #fff;
+          font-family: 'Orbitron', sans-serif;
+          font-size: 0.9rem;
+          line-height: 1.4;
+        }
+
+        .tournament-detail-icon {
+          color: #BABC19;
+          font-size: 1.1rem;
+          width: 20px;
+          text-align: center;
+          text-shadow: 0 0 8px rgba(186, 188, 25, 0.6);
+        }
+
+        .tournament-detail-label {
+          color: #BABC19;
+          font-weight: bold;
+          min-width: 80px;
+          text-shadow: 0 0 8px rgba(186, 188, 25, 0.6);
+        }
+
+        .tournament-detail-value {
+          color: #fff;
+          flex: 1;
+        }
+
+        .tournament-buttons-enhanced {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-top: auto;
+        }
+
+        .tournament-button-enhanced {
+          width: 100%;
+          padding: 12px 20px;
+          background: linear-gradient(90deg, #01E2E9 0%, #1976d2 100%);
+          color: #fff;
+          border: none;
+          border-radius: 8px;
+          font-weight: bold;
+          font-size: 0.95rem;
+          cursor: pointer;
+          transition: all 0.4s ease;
+          box-shadow: 0 4px 20px rgba(1, 226, 233, 0.3);
+          font-family: 'Orbitron', sans-serif;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+        }
+
+        .tournament-button-enhanced:hover {
+          background: linear-gradient(90deg, #01E2E9 60%, #BABC19 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(1, 226, 233, 0.5);
+        }
+
+        .tournament-button-enhanced::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          transition: left 0.5s;
+        }
+
+        .tournament-button-enhanced:hover::before {
+          left: 100%;
+        }
+
+        .tournament-grid-enhanced {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 25px;
+          justify-items: center;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+
+        @media (max-width: 1024px) {
+          .tournament-grid-enhanced {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 800px;
+          }
+          
+          .tournament-card-enhanced {
+            max-width: 350px;
+            height: 480px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .tournament-grid-enhanced {
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 0 15px;
+            max-width: 100%;
+          }
+          
+          .tournament-card-enhanced {
+            width: 100%;
+            max-width: 100%;
+            height: 450px;
+            margin: 0 auto;
+          }
+
+          .tournament-image-container {
+            height: 160px;
+          }
+
+          .tournament-content {
+            padding: 18px;
+          }
+
+          .tournament-title-enhanced {
+            font-size: 1.1rem;
+            min-height: 2.2rem;
+          }
+
+          .tournament-detail-item {
+            font-size: 0.85rem;
+          }
+
+          .tournament-button-enhanced {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .tournament-grid-enhanced {
+            padding: 0 10px;
+          }
+          
+          .tournament-card-enhanced {
+            height: 420px;
+            border-radius: 12px;
+          }
+
+          .tournament-image-container {
+            height: 140px;
+            border-radius: 10px 10px 0 0;
+          }
+
+          .tournament-content {
+            padding: 15px;
+          }
+
+          .tournament-title-enhanced {
+            font-size: 1rem;
+            min-height: 2rem;
+            margin-bottom: 12px;
+          }
+
+          .tournament-details {
+            gap: 6px;
+            margin-bottom: 15px;
+          }
+
+          .tournament-detail-item {
+            font-size: 0.8rem;
+          }
+
+          .tournament-detail-icon {
+            font-size: 1rem;
+            width: 18px;
+          }
+
+          .tournament-detail-label {
+            min-width: 70px;
+            font-size: 0.8rem;
+          }
+
+          .tournament-buttons-enhanced {
+            gap: 8px;
+          }
+
+          .tournament-button-enhanced {
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+          }
+        }
+
+        @media (max-width: 360px) {
+          .tournament-card-enhanced {
+            height: 400px;
+          }
+
+          .tournament-image-container {
+            height: 120px;
+          }
+
+          .tournament-content {
+            padding: 12px;
+          }
+
+          .tournament-title-enhanced {
+            font-size: 0.95rem;
+            min-height: 1.8rem;
+          }
+
+          .tournament-detail-item {
+            font-size: 0.75rem;
+          }
+
+          .tournament-button-enhanced {
+            font-size: 0.8rem;
+            padding: 8px 12px;
+          }
         }
       `}</style>
     <div style={styles.dashboardBg}>
@@ -250,131 +587,176 @@ function UserDashboard() {
       </div>
 
       <div style={styles.neonDivider} />
-{ /* Teams and Tournaments Section */}
-     <div style={{ padding: '5rem', maxWidth: 1200, margin: '0 auto' }}>
-  <div style={styles.createTeamSection}>
-    <h2 style={styles.sectionHeading}>
-      <span style={styles.sectionIcon}>👥</span> My Teams & Invitations
-    </h2>
 
-    {myTeams.length === 0 && (
-      <button style={styles.createTeamButton} onClick={() => setShowCreateTeam(true)}>
-        Create Team
-      </button>
-    )}
+      {/* Teams and Tournaments Section */}
+      <div style={{ padding: '5rem', maxWidth: 1200, margin: '0 auto' }}>
+        <div style={styles.createTeamSection}>
+          <h2 style={styles.sectionHeading}>
+            <span style={styles.sectionIcon}>👥</span> My Teams & Invitations
+          </h2>
 
-    {pendingInvites.length > 0 && (
-      <div style={{ marginBottom: 24, padding: 16, background: '#1a1a1a', borderRadius: 8 }}>
-        <h3 style={{ textAlign: 'center' }}>Team Invitations</h3>
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-          {pendingInvites.map(inv => (
-            <li key={inv.id} style={{ marginBottom: 8, textAlign: 'center' }}>
-              <b>{inv.teams?.team_name || 'Team'}</b>
-              <button style={{ marginLeft: 12 }} onClick={() => handleAccept(inv.id)}>Accept</button>
-              <button style={{ marginLeft: 8 }} onClick={() => handleDecline(inv.id)}>Decline</button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
+          {myTeams.length === 0 && (
+            <button style={styles.createTeamButton} onClick={() => setShowCreateTeam(true)}>
+              Create Team
+            </button>
+          )}
 
-    {myTeams.length > 0 && (
-      <div style={styles.myTeamsBox}>
-        <h3 style={{ textAlign: 'center', fontFamily: 'Orbitron', color: 'lightblue', marginBottom: "12px"}}>My Teams</h3>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {myTeams.map(team => (
-            <li key={team.id} style={{ marginBottom: 16 }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: 12,
-                flexWrap: 'wrap'
-              }}>
-                {team.teams?.team_logo_url && (
-                  <img
-                    src={team.teams.team_logo_url}
-                    alt="logo"
-                    width={32}
-                    height={32}
-                    style={{ borderRadius: 4 }}
-                  />
-                )}
-                <b style={{ color: '#01E2E9', fontFamily: 'Orbitron' }}>{team.teams?.team_name}</b>
-                {team.is_captain && (
-                  <span style={{ marginLeft: 8, color: '#1976d2', fontWeight: 600 }}>(Captain)</span>
-                )}
-                {team.is_captain ? (
-                  <button
-                    className="edit-team-btn"
-                    onClick={() => {
-                      setEditTeamId(team.team_id);
-                      setShowEditModal(true);
-                    }}
-                  >
-                     Edit Team
-                  </button>
-                ) : (
-                  <button
-                    style={{ marginLeft: 16, backgroundColor: '#f44336', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 4 }}
-                    onClick={() => leaveTeam(team)}
-                  >
-                    Leave Team
-                  </button>
-                )}
-              </div>
+          {pendingInvites.length > 0 && (
+            <div style={{ marginBottom: 24, padding: 16, background: '#1a1a1a', borderRadius: 8 }}>
+              <h3 style={{ textAlign: 'center' }}>Team Invitations</h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {pendingInvites.map(inv => (
+                  <li key={inv.id} style={{ marginBottom: 8, textAlign: 'center' }}>
+                    <b>{inv.teams?.team_name || 'Team'}</b>
+                    <button style={{ marginLeft: 12 }} onClick={() => handleAccept(inv.id)}>Accept</button>
+                    <button style={{ marginLeft: 8 }} onClick={() => handleDecline(inv.id)}>Decline</button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-              {teamMembers[team.team_id]?.length > 0 && (
-                <ul style={{
-                  listStyle: 'none',
-                  padding: 0,
-                  textAlign: 'center',
-                  marginTop: 6,
-                  fontFamily: 'Orbitron',
-                  fontSize: '0.9rem'
-                }}>
-                  {teamMembers[team.team_id].map(m => (
-                    <li key={m.id} style={{ marginBottom: '16px' }}>
-                      {m.profiles?.username || m.profiles?.email || m.user_id}
-                      {m.is_captain && (
-                        <span style={{ marginLeft: 4, color: '#1976d2' }}>(Captain)</span>
+          {myTeams.length > 0 && (
+            <div style={styles.myTeamsBox}>
+              <h3 style={{ textAlign: 'center', fontFamily: 'Orbitron', color: 'lightblue', marginBottom: "12px"}}>My Teams</h3>
+              <ul style={{ listStyle: 'none', padding: 0 }}>
+                {myTeams.map(team => (
+                  <li key={team.id} style={{ marginBottom: 16 }}>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: 12,
+                      flexWrap: 'wrap'
+                    }}>
+                      {team.teams?.team_logo_url && (
+                        <img
+                          src={team.teams.team_logo_url}
+                          alt="logo"
+                          width={32}
+                          height={32}
+                          style={{ borderRadius: 4 }}
+                        />
                       )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
-  </div>
+                      <b style={{ color: '#01E2E9', fontFamily: 'Orbitron' }}>{team.teams?.team_name}</b>
+                      {team.is_captain && (
+                        <span style={{ marginLeft: 8, color: '#1976d2', fontWeight: 600 }}>(Captain)</span>
+                      )}
+                      {team.is_captain ? (
+                        <button
+                          className="edit-team-btn"
+                          onClick={() => {
+                            setEditTeamId(team.team_id);
+                            setShowEditModal(true);
+                          }}
+                        >
+                           Edit Team
+                        </button>
+                      ) : (
+                        <button
+                          style={{ marginLeft: 16, backgroundColor: '#f44336', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 4 }}
+                          onClick={() => leaveTeam(team)}
+                        >
+                          Leave Team
+                        </button>
+                      )}
+                    </div>
 
-{/* Tournaments Section */}
+                    {teamMembers[team.team_id]?.length > 0 && (
+                      <ul style={{
+                        listStyle: 'none',
+                        padding: 0,
+                        textAlign: 'center',
+                        marginTop: 6,
+                        fontFamily: 'Orbitron',
+                        fontSize: '0.9rem'
+                      }}>
+                        {teamMembers[team.team_id].map(m => (
+                          <li key={m.id} style={{ marginBottom: '16px' }}>
+                            {m.profiles?.username || m.profiles?.email || m.user_id}
+                            {m.is_captain && (
+                              <span style={{ marginLeft: 4, color: '#1976d2' }}>(Captain)</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {/* Enhanced Tournaments Section */}
         <div>
-          <h3 style={styles.sectionHeading}><span style={styles.sectionIcon}>🏆</span> Upcoming Tournaments</h3>
-          {loading && <p>Loading tournaments...</p>}
-          {error && <p style={{ color: 'red' }}>{error}</p>}
+          <h3 style={styles.sectionHeading}>
+            <span style={styles.sectionIcon}>🏆</span> AVAILABLE TOURNAMENTS
+          </h3>
+          {loading && <p style={{ textAlign: 'center', color: '#01E2E9', fontSize: '1.2rem' }}>⚡ Loading tournaments...</p>}
+          {error && <p style={{ color: '#ff4444', textAlign: 'center', fontSize: '1.2rem' }}>❌ {error}</p>}
 
-          <div style={styles.tournamentListWrapper}>
-            <div style={styles.tournamentList}>
-              {tournaments.map(t => (
-                <div key={t.id} style={styles.tournamentCard}>
-                  {t.logo_url && <img src={t.logo_url} alt={t.name} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 4 }} />}
-                  <h2 style={{ color: '#01E2E9', fontFamily: 'Orbitron' }}>{t.name}</h2>
-                  <p><b>Prize Pool:</b> {t.prize_pool}</p>
-                  <p><b>Start:</b> {t.start_date}</p>
-                  <p><b>End:</b> {t.end_date}</p>
-                  <p><b>Game:</b> {t.game}</p>
-                  <p><b>Mode:</b> {t.mode}</p>
-                  <div style={styles.tournamentButtonGroup}>
-                    <button onClick={() => { setRegisterTournament(t); setShowRegisterModal(true); }} style={styles.tournamentButton}>Join</button>
+          <div className="tournament-grid-enhanced">
+            {tournaments.map(t => (
+              <div key={t.id} className="tournament-card-enhanced">
+                <div className="tournament-image-container">
+                  {t.logo_url && (
+                    <img src={t.logo_url} alt={t.name} className="tournament-image-enhanced" />
+                  )}
+                </div>
+                
+                <div className="tournament-content">
+                  <h2 className="tournament-title-enhanced">{t.name}</h2>
+                  
+                  <div className="tournament-details">
+                    <div className="tournament-detail-item">
+                      <span className="tournament-detail-icon">💰</span>
+                      <span className="tournament-detail-label">Prize Pool:</span>
+                      <span className="tournament-detail-value">{t.prize_pool}</span>
+                    </div>
+                    
+                    <div className="tournament-detail-item">
+                      <span className="tournament-detail-icon">🚀</span>
+                      <span className="tournament-detail-label">Start:</span>
+                      <span className="tournament-detail-value">{t.start_date}</span>
+                    </div>
+                    
+                    <div className="tournament-detail-item">
+                      <span className="tournament-detail-icon">🏁</span>
+                      <span className="tournament-detail-label">End:</span>
+                      <span className="tournament-detail-value">{t.end_date}</span>
+                    </div>
+                    
+                    <div className="tournament-detail-item">
+                      <span className="tournament-detail-icon">🎮</span>
+                      <span className="tournament-detail-label">Game:</span>
+                      <span className="tournament-detail-value">{t.game}</span>
+                    </div>
+                    
+                    <div className="tournament-detail-item">
+                      <span className="tournament-detail-icon">⚔️</span>
+                      <span className="tournament-detail-label">Mode:</span>
+                      <span className="tournament-detail-value">{t.mode}</span>
+                    </div>
+                  </div>
 
-                    <button onClick={() => navigate(`/tournament/${t.id}`)} style={styles.tournamentButton}>View More</button>
+                  <div className="tournament-buttons-enhanced">
+                    <button 
+                      className="tournament-button-enhanced"
+                      onClick={() => { setRegisterTournament(t); setShowRegisterModal(true); }}
+                    >
+                      🎯 JOIN TOURNAMENT
+                    </button>
+                    <button 
+                      className="tournament-button-enhanced"
+                      onClick={() => navigate(`/tournament/${t.id}`)}
+                    >
+                      📋 VIEW DETAILS
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -402,8 +784,8 @@ function UserDashboard() {
       {showEditModal && editTeamId && (
         <div style={styles.modalOverlay}>
           <div style={styles.closeButton}>
-          <EditTeamModal teamId={editTeamId} onClose={() => setShowEditModal(false)} />
-            </div>
+            <EditTeamModal teamId={editTeamId} onClose={() => setShowEditModal(false)} />
+          </div>
         </div>
       )}
 
@@ -417,7 +799,7 @@ function UserDashboard() {
   );
 }
 
-// Make sure this `styles` object exactly mirrors the one you already defined (no changes needed)
+// Styles object remains the same
 const styles = { 
   dashboardBg: {
     minHeight: '100vh',
@@ -755,4 +1137,4 @@ const styles = {
     '100%': { transform: 'translateY(-60vh)' },
   },
  };
-export default UserDashboard;
+ export default UserDashboard;
