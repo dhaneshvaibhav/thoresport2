@@ -69,8 +69,8 @@ app.post('/tournament-invite', async (req, res) => {
 
   // Send email to each member with unique accept/decline links
   for (const email of teamEmails) {
-    const acceptLink = http://localhost:4000/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=accept;
-    const declineLink = http://localhost:4000/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=decline;
+    const acceptLink = `http://localhost:4000/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=accept`;
+    const declineLink = `http://localhost:4000/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=decline`;
     const html = `
       <p>You are invited to join tournament: <b>${tournamentName}</b></p>
       <p>
@@ -78,7 +78,7 @@ app.post('/tournament-invite', async (req, res) => {
         <a href="${declineLink}">Decline</a>
       </p>
     `;
-    await sendMail({ to: email, subject: Tournament Invitation: ${tournamentName}, html });
+    await sendMail({ to: email, subject: `Tournament Invitation: ${tournamentName}`, html });
   }
 
   res.json({ success: true, requestId });
@@ -148,5 +148,5 @@ app.get('/tournament-response', async (req, res) => {
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  console.log('Server running on port ${PORT});
+  console.log(`Server running on port ${PORT}`);
 });

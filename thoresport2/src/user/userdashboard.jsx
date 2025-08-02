@@ -141,6 +141,113 @@ function UserDashboard() {
           }
         }
 
+        /* Hero Section Styles */
+        .dashboard-hero {
+          width: 100vw;
+          max-width: 100vw;
+          margin: 0 auto 3rem;
+          padding: 0 0.5rem;
+          background: linear-gradient(135deg, #011f2a 60%, #000 100%);
+          border-bottom: 2px solid #01E2E9;
+          box-shadow: 0 8px 32px #01E2E955;
+        }
+        .dashboard-hero-content {
+          display: flex;
+          gap: 4rem;
+          align-items: center;
+          min-height: 420px;
+          justify-content: center;
+        }
+        .dashboard-hero-description {
+          flex: 0.8;
+          padding: 2.5rem 1.2rem;
+          background: rgba(26, 26, 26, 0.92);
+          border-radius: 18px;
+          box-shadow: 0 0 24px #01E2E955;
+          backdrop-filter: blur(10px);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .dashboard-hero-title {
+          font-size: 3.5rem;
+          margin-bottom: 1.2rem;
+          color: #01E2E9;
+          font-family: 'Orbitron', sans-serif;
+          font-weight: bold;
+          text-shadow: 0 0 32px #01E2E9, 0 0 8px #BABC19;
+          letter-spacing: 2px;
+          
+        }
+        .dashboard-hero-title {
+          font-size: 3.5rem;
+          margin-bottom: 1.2rem;
+          color: #01E2E9;
+          font-family: 'Orbitron', sans-serif;
+          font-weight: bold;
+          letter-spacing: 2px;
+        }
+          color: #fff;
+        }
+        .dashboard-hero-features {
+          margin-bottom: 2.2rem;
+        }
+        .dashboard-hero-feature {
+          display: flex;
+          align-items: center;
+          margin-bottom: 1.1rem;
+          font-size: 1.1rem;
+          color: #fff;
+        }
+        .dashboard-hero-feature-icon {
+          margin-right: 1.1rem;
+          font-size: 1.6rem;
+        }
+        .dashboard-hero-video {
+          flex: 1.2;
+          position: relative;
+          aspect-ratio: 16 / 9;
+          border-radius: 18px;
+          overflow: hidden;
+          box-shadow: 0 0 32px #01E2E955;
+          border: 1.5px solid #01E2E9;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 320px;
+          background: #000;
+        }
+        @media (max-width: 900px) {
+          .dashboard-hero-content {
+            gap: 2rem;
+          }
+        }
+        @media (max-width: 700px) {
+          .dashboard-hero-content {
+            flex-direction: column;
+            gap: 2rem;
+            min-height: 320px;
+            padding: 0.5rem;
+          }
+          .dashboard-hero-description {
+            padding: 1.2rem;
+          }
+          .dashboard-hero-title {
+            font-size: 2.1rem;
+            margin-bottom: 0.7rem;
+          }
+          .dashboard-hero-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+          }
+          .dashboard-hero-video {
+            min-width: 0;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            min-height: 180px;
+          }
+        }
+
         @keyframes bgMove {
           0% { background-position: 0% 50%; }
           100% { background-position: 100% 50%; }
@@ -531,29 +638,66 @@ function UserDashboard() {
             padding: 8px 12px;
           }
         }
+
+        /* Mobile styles for My Teams section */
+        @media (max-width: 700px) {
+          .myTeamsBox {
+            padding: 1rem !important;
+            margin-top: 12px !important;
+            border-radius: 8px !important;
+          }
+          .myTeamsBox h3 {
+            font-size: 1.1rem !important;
+            margin-bottom: 8px !important;
+          }
+          .myTeamsBox ul {
+            padding: 0 !important;
+          }
+          .myTeamsBox li {
+            margin-bottom: 10px !important;
+          }
+          .myTeamsBox img {
+            width: 24px !important;
+            height: 24px !important;
+          }
+          .myTeamsBox b {
+            font-size: 1rem !important;
+          }
+          .myTeamsBox button,
+          .myTeamsBox .edit-team-btn {
+            font-size: 0.85rem !important;
+            padding: 7px 12px !important;
+            border-radius: 5px !important;
+            margin-left: 8px !important;
+          }
+          .myTeamsBox ul ul {
+            font-size: 0.8rem !important;
+            margin-top: 4px !important;
+          }
+        }
       `}</style>
     <div style={styles.dashboardBg}>
       {/* Video Hero Section */}
-      <div style={styles.heroContainer}>
-        <div style={styles.heroContent}>
-          <div style={styles.descriptionSection}>
-            <h1 style={styles.mainTitle}>THORESPORT</h1>
-            <h2 style={styles.subtitle}>The Ultimate Gaming Tournament Platform</h2>
-            <p style={styles.description}>
+      <div className="dashboard-hero">
+        <div className="dashboard-hero-content">
+          <div className="dashboard-hero-description">
+            <h1 className="dashboard-hero-title">THORESPORT</h1>
+            <h2 className="dashboard-hero-subtitle">The Ultimate Gaming Tournament Platform</h2>
+            <p className="dashboard-hero-description-text">
               Welcome to Thoresport, the premier destination for competitive gaming tournaments. 
               Join thousands of players worldwide in epic battles across your favorite games.
             </p>
-            <div style={styles.features}>
+            <div className="dashboard-hero-features">
               {['🏆 Massive Prize Pools', '⚡ Real-time Competition', '🎮 Multiple Game Titles', '👥 Team & Solo Events'].map((f, i) => (
-                <div key={i} style={styles.feature}>
-                  <span style={styles.featureIcon}>{f.split(' ')[0]}</span>
+                <div key={i} className="dashboard-hero-feature">
+                  <span className="dashboard-hero-feature-icon">{f.split(' ')[0]}</span>
                   <span>{f.split(' ').slice(1).join(' ')}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div style={styles.videoSection}>
+          <div className="dashboard-hero-video">
             <div
               style={{
                 ...styles.slideWrapper,
@@ -608,8 +752,44 @@ function UserDashboard() {
                 {pendingInvites.map(inv => (
                   <li key={inv.id} style={{ marginBottom: 8, textAlign: 'center' }}>
                     <b>{inv.teams?.team_name || 'Team'}</b>
-                    <button style={{ marginLeft: 12 }} onClick={() => handleAccept(inv.id)}>Accept</button>
-                    <button style={{ marginLeft: 8 }} onClick={() => handleDecline(inv.id)}>Decline</button>
+                    <button 
+                      style={{ 
+                        marginLeft: 12, 
+                        background: 'linear-gradient(90deg, #43ea5e 60%, #1976d2 100%)',
+                        color: '#fff',
+                        border: 'none',
+                        padding: '8px 18px',
+                        borderRadius: 6,
+                        fontWeight: 'bold',
+                        fontFamily: 'Orbitron, sans-serif',
+                        boxShadow: '0 0 8px #43ea5e55',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        letterSpacing: 1,
+                        outline: 'none',
+                        transition: 'background 0.2s, transform 0.2s, box-shadow 0.2s',
+                      }} 
+                      onClick={() => handleAccept(inv.id)}
+                    >Accept</button>
+                    <button 
+                      style={{ 
+                        marginLeft: 8, 
+                        background: 'linear-gradient(90deg, #f44336 60%, #d32f2f 100%)',
+                        color: '#fff',
+                        border: 'none',
+                        padding: '8px 18px',
+                        borderRadius: 6,
+                        fontWeight: 'bold',
+                        fontFamily: 'Orbitron, sans-serif',
+                        boxShadow: '0 0 8px #f4433655',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        letterSpacing: 1,
+                        outline: 'none',
+                        transition: 'background 0.2s, transform 0.2s, box-shadow 0.2s',
+                      }} 
+                      onClick={() => handleDecline(inv.id)}
+                    >Decline</button>
                   </li>
                 ))}
               </ul>
