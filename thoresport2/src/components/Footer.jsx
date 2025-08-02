@@ -5,32 +5,74 @@ import logo from '../assets/logo.png';
 function Footer() {
   return (
     <footer style={footerStyle}>
-      <div style={footerContainer}>
+      <style>{`
+        /* --- Mobile-specific CSS for Footer (up to 768px) --- */
+        @media (max-width: 768px) {
+          .footerContainer {
+            flex-direction: column; /* This stacks the logo and link sections */
+            gap: 2rem;
+            padding: 0 1.5rem;
+            text-align: center;
+          }
+
+          .logoSection, .linkSection {
+            min-width: unset;
+            text-align: center;
+            width: 100%;
+            margin-bottom: 2rem; /* Add space between stacked sections */
+          }
+          
+          .descStyle, .devCreditStyle {
+            margin: 0 auto;
+            max-width: 90%;
+          }
+
+          .linkSection {
+            display: flex; /* Make the right section a flex container */
+            flex-direction: column; /* Stack social icons and contact info */
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+          }
+
+          .iconRow {
+            justify-content: center;
+            margin-top: 1rem;
+          }
+
+          .column {
+            min-width: unset;
+            width: 100%;
+            text-align: center; /* Center the contact column text */
+          }
+        }
+      `}</style>
+      <div style={footerContainer} className="footerContainer">
         {/* Left Section */}
-        <div style={logoSection}>
+        <div style={logoSection} className="logoSection">
           <img src={logo} alt="ThorEsports Logo" style={logoStyle} />
-          <p style={descStyle}>
+          <p style={descStyle} className="descStyle">
             ThorEsports — Your gateway to elite tournaments and top-tier gaming action.
           </p>
           {/* Developer credit */}
-            <p style={devCreditStyle}>
-              Developed by{' '}
-              <a
-                href="https://Adjunct.in"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={adjunctLinkStyle}
-              >
-                Adjunct
-              </a>
-            </p>
+          <p style={devCreditStyle} className="devCreditStyle">
+            Developed by{' '}
+            <a
+              href="https://Adjunct.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={adjunctLinkStyle}
+            >
+              Adjunct
+            </a>
+          </p>
         </div>
 
         {/* Right Section */}
-        <div style={linkSection}>
-          <div style={column}>
+        <div style={linkSection} className="linkSection">
+          <div style={column} className="column">
             {/* Social Icons */}
-            <div style={iconRow}>
+            <div style={iconRow} className="iconRow">
               <a href="https://discord.gg/Nmv9fNRpHU" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
                 <FaDiscord />
               </a>
@@ -40,13 +82,13 @@ function Footer() {
               <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
                 <FaWhatsapp />
               </a>
-              <a href="https://youtube.com/@gamingwithss001?si=1YlAu0BottfkYXeE" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
+              <a href="https://www.youtube.com/embed/$8" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
                 <FaYoutube />
               </a>
             </div>
           </div>
 
-          <div style={column}>
+          <div style={column} className="column">
             <h4 style={columnTitle}>Contact</h4>
             <p style={linkStyle}>support@thoresports.gg</p>
             <p style={linkStyle}>+91 98765 43210</p>
