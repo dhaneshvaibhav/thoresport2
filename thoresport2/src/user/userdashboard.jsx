@@ -804,10 +804,10 @@ function UserDashboard() {
                   <li key={team.id} style={{ marginBottom: 16 }}>
                     <div style={{
                       display: 'flex',
-                      justifyContent: 'center',
                       alignItems: 'center',
-                      gap: 12,
-                      flexWrap: 'wrap'
+                      gap: 8,
+                      flexWrap: 'wrap',
+                      justifyContent: 'flex-start',
                     }}>
                       {team.teams?.team_logo_url && (
                         <img
@@ -815,12 +815,12 @@ function UserDashboard() {
                           alt="logo"
                           width={32}
                           height={32}
-                          style={{ borderRadius: 4 }}
+                          style={{ borderRadius: 4, marginRight: 8 }}
                         />
                       )}
-                      <b style={{ color: '#01E2E9', fontFamily: 'Orbitron' }}>{team.teams?.team_name}</b>
+                      <b style={{ color: '#01E2E9', fontFamily: 'Orbitron', marginRight: 8, fontSize: '0.8rem' }}>{team.teams?.team_name}</b>
                       {team.is_captain && (
-                        <span style={{ marginLeft: 8, color: '#1976d2', fontWeight: 600 }}>(Captain)</span>
+                        <span style={{ marginLeft: 4, color: '#1976d2', fontWeight: 600, fontSize: '0.7rem' }}>(Captain)</span>
                       )}
                       {team.is_captain ? (
                         <button
@@ -834,7 +834,7 @@ function UserDashboard() {
                         </button>
                       ) : (
                         <button
-                          style={{ marginLeft: 16, backgroundColor: '#f44336', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 4 }}
+                          style={{ marginLeft: 12, backgroundColor: '#f44336', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 4 }}
                           onClick={() => leaveTeam(team)}
                         >
                           Leave Team
@@ -849,13 +849,13 @@ function UserDashboard() {
                         textAlign: 'center',
                         marginTop: 6,
                         fontFamily: 'Orbitron',
-                        fontSize: '0.9rem'
+                        fontSize: '0.65rem'
                       }}>
                         {teamMembers[team.team_id].map(m => (
-                          <li key={m.id} style={{ marginBottom: '16px' }}>
+                          <li key={m.id} style={{ marginBottom: '14px' }}>
                             {m.profiles?.username || m.profiles?.email || m.user_id}
                             {m.is_captain && (
-                              <span style={{ marginLeft: 4, color: '#1976d2' }}>(Captain)</span>
+                              <span style={{ marginLeft: 4, color: '#1976d2', fontSize: '0.75em' }}>(Captain)</span>
                             )}
                           </li>
                         ))}
