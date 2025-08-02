@@ -79,7 +79,7 @@ function Admintournament() {
         rules: form.rules,
         points_system: form.points_system,
       };
-      const response = await axios.post('http://localhost:4000/create-tournament', payload, {
+      const response = await axios.post('http://localhost:4000/org/create-tournament', payload, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
