@@ -90,9 +90,9 @@ function Footer() {
 
           <div style={column} className="column">
             <h4 style={columnTitle}>Contact</h4>
-            <p style={linkStyle}>support@thoresports.gg</p>
-            <p style={linkStyle}>+91 98765 43210</p>
+            <p style={linkStyle}>thoresportsofficial@gmail.com</p>
             <p style={linkStyle}>India</p>
+            <p style={linkStyle}>For Any collabration , Contact to given Email</p>
           </div>
         </div>
       </div>
