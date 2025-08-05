@@ -261,7 +261,7 @@ function TournamentDetails() {
               flexDirection: 'column',
               gap: 12
             }}>
-              <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif"}}>Organized By:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{tournament.organization_id || 'N/A'}</span></div>
+              <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif"}}>Organized By:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{'Thor Esports' || 'N/A'}</span></div>
               <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>Game:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{tournament.game || 'N/A'}</span></div>
               <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>Mode:</span> <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{tournament.mode || 'N/A'}</span></div>
               <div><span style={{ color: '#0DCAF0', fontWeight: 700, fontFamily: "'Orbitron', sans-serif" }}>Prize Pool:</span> <span style={{
