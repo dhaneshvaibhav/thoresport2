@@ -17,6 +17,7 @@ import AdminTournamentDetails from './admin/AdminTournamentDetails';
 import AdminNavbar from './components/adminnavbar';
 import Footer from './components/Footer';
 import Leaderboard from './user/leaderboard';
+import Terms from './user/terms';
 
 // Layouts
 const UserLayout = ({ children }) => (
@@ -54,6 +55,7 @@ function App() {
         <Route path="/signin" element={<UserLayout><UserSigning /></UserLayout>} />
         <Route path="/signup" element={<UserLayout><UserSignup /></UserLayout>} />
         <Route path="/reset-password" element={<UserLayout><ResetPassword /></UserLayout>} />
+        <Route path="/terms" element={<UserLayout><Terms /></UserLayout>} />
 
         {/* User Protected Routes */}
         <Route path="/" element={<UserProtectedRoute><UserLayout><UserDashboard /></UserLayout></UserProtectedRoute>} />

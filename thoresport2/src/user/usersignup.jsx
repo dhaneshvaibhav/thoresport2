@@ -5,6 +5,7 @@ import logo from '../assets/logo.png'; // replace with your logo path
 function UserSignup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [msg, setMsg] = useState('');
 
   const handleSignup = async () => {
@@ -16,6 +17,11 @@ function UserSignup() {
 
     if (password.length < 6) {
       setMsg('❌ Password must be at least 6 characters long');
+      return;
+    }
+
+    if (!acceptedTerms) {
+      setMsg('❌ Please accept the terms and conditions');
       return;
     }
 
@@ -42,6 +48,7 @@ function UserSignup() {
         // Clear form after successful signup
         setEmail('');
         setPassword('');
+        setAcceptedTerms(false);
       }
     } catch (error) {
       console.error('Signup error:', error);
@@ -70,6 +77,22 @@ function UserSignup() {
           onChange={e => setPassword(e.target.value)}
           style={inputStyle}
         />
+
+        <div style={checkboxContainerStyle}>
+          <input
+            type="checkbox"
+            id="terms"
+            checked={acceptedTerms}
+            onChange={e => setAcceptedTerms(e.target.checked)}
+            style={checkboxStyle}
+          />
+          <label htmlFor="terms" style={checkboxLabelStyle}>
+            I accept the{' '}
+            <a href="/terms" style={linkStyle} target="_blank" rel="noopener noreferrer">
+              Terms and Conditions
+            </a>
+          </label>
+        </div>
 
         <button onClick={handleSignup} style={buttonStyle}>
           Create Account
@@ -156,6 +179,24 @@ const inputStyle = {
   border: '1px solid #0DCAF0',
   fontFamily: "'Orbitron', sans-serif",
   color: '#0DCAF0',
+};
+
+const checkboxContainerStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: '1rem',
+  textAlign: 'left',
+  fontSize: '0.85rem',
+};
+
+const checkboxStyle = {
+  marginRight: '0.5rem',
+  accentColor: '#0DCAF0',
+};
+
+const checkboxLabelStyle = {
+  color: '#aaa',
+  fontFamily: "'Orbitron', sans-serif",
 };
 
 const buttonStyle = {
