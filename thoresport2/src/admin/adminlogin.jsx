@@ -11,7 +11,7 @@ function Adminlogin() {
   const handleSignin = async () => {
     setMessage('');
     try {
-      const res = await axios.post('http://localhost:4000/org/login', { email, password });
+      const res = await axios.post('https://thoresport2-backend.onrender.com/org/login', { email, password });
       localStorage.setItem('orgToken', res.data.token);
       setMessage('✅ Sign in successful! Redirecting...');
       setTimeout(() => navigate('/admin/dashboard'), 1000);

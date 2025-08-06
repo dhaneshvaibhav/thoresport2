@@ -194,7 +194,7 @@ function AdminTournamentDetails() {
 
         // 3. Send the announcement email
         if (emails.length > 0) {
-          axios.post('http://localhost:4000/send-announcement-email', {
+          axios.post('https://thoresport2-backend.onrender.com/send-announcement-email', {
             emails,
             subject: `New Announcement for ${tournament?.name || 'Tournament'}`,
             html: `<p>${announcementText.trim()}</p>`

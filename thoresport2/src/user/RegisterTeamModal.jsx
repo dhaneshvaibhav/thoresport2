@@ -123,7 +123,7 @@ function RegisterTeamModal({ tournament, onClose }) {
           const registrationId = regData?.id;
           const members = (teamMembers[selectedTeamId] || []).map(m => m.profiles?.email).filter(Boolean);
           if (members.length > 0 && registrationId) {
-            await axios.post('http://localhost:4000/tournament-invite', {
+            await axios.post('https://thoresport2-backend.onrender.com/tournament-invite', {
               registrationId,
               teamId: selectedTeamId,
               tournamentId: tournament?.id,

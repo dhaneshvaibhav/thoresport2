@@ -14,7 +14,7 @@ const orgRouter = require('./org-auth-server');
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -69,8 +69,8 @@ app.post('/tournament-invite', async (req, res) => {
 
   // Send email to each member with unique accept/decline links
   for (const email of teamEmails) {
-    const acceptLink = `http://localhost:4000/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=accept`;
-    const declineLink = `http://localhost:4000/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=decline`;
+    const acceptLink = `https://thoresport2-backend.onrender.com/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=accept`;
+    const declineLink = `https://thoresport2-backend.onrender.com/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=decline`;
     const html = `
       <p>Dear Team Member,</p>
       <p>You are invited to join the tournament: <b>${tournamentName}</b>.</p>
