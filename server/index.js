@@ -72,11 +72,24 @@ app.post('/tournament-invite', async (req, res) => {
     const acceptLink = `http://localhost:4000/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=accept`;
     const declineLink = `http://localhost:4000/tournament-response?requestId=${requestId}&email=${encodeURIComponent(email)}&response=decline`;
     const html = `
-      <p>You are invited to join tournament: <b>${tournamentName}</b></p>
+      <p>Dear Team Member,</p>
+      <p>You are invited to join the tournament: <b>${tournamentName}</b>.</p>
+      <p>Here are the details of the tournament:</p>
+      <ul>
+        <li><b>Date:</b> [Insert Date]</li>
+        <li><b>Time:</b> [Insert Time]</li>
+        <li><b>Location:</b> [Insert Location]</li>
+        <li><b>Rules:</b> [Insert Link to Rules or Brief Description]</li>
+      </ul>
+      <p>Please confirm your participation by clicking one of the links below:</p>
       <p>
         <a href="${acceptLink}">Accept</a> | 
         <a href="${declineLink}">Decline</a>
       </p>
+      <p>If you have any questions, feel free to contact us at thoresportsoffical@gmail.com </p>
+      <p>Looking forward to your response!</p>
+      <p>Best regards,</p>
+      <p>The Tournament Team</p>
     `;
     await sendMail({ to: email, subject: `Tournament Invitation: ${tournamentName}`, html });
   }
