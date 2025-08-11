@@ -79,9 +79,6 @@ function Footer() {
               <a href="https://www.instagram.com/_thor_esports_?igsh=cTVrb2NsbjN2NzN2" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
                 <FaInstagram />
               </a>
-              <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
-                <FaWhatsapp />
-              </a>
               <a href="https://www.youtube.com/embed/$8" target="_blank" rel="noopener noreferrer" style={iconLinkStyle}>
                 <FaYoutube />
               </a>
