@@ -773,10 +773,10 @@ function UserDashboard() {
         <div className="dashboard-hero">
           <div className="dashboard-hero-content">
             <div className="dashboard-hero-description">
-              <h1 className="dashboard-hero-title">THORESPORT</h1>
+              <h1 className="dashboard-hero-title">THORESPORTS</h1>
               <h2 className="dashboard-hero-subtitle">The Ultimate Gaming Tournament Platform</h2>
               <p className="dashboard-hero-description-text">
-                Welcome to Thoresport, the premier destination for competitive gaming tournaments. 
+                Welcome to Thoresports, the premier destination for competitive gaming tournaments. 
                 Join thousands of players worldwide in epic battles across your favorite games.
               </p>
               <div className="dashboard-hero-features">
@@ -1072,7 +1072,7 @@ function UserDashboard() {
             {/* View All Tournaments Button */}
             <button
               className="view-all-tournaments-btn"
-              onClick={() => navigate('/tournaments')}
+              onClick={() => navigate('/tournament')}
             >
               View All Tournaments
             </button>
